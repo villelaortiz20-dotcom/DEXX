@@ -113,6 +113,7 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 .check{width:30px;height:30px;border:1.5px solid var(--mut);border-radius:8px;display:grid;place-items:center;flex:0 0 auto;font-size:16px}
 .item.hecho .check{background:var(--txt);border-color:var(--txt);color:#000}
 
+.nota-dia{margin:10px 0 0;padding:8px 10px;border-left:2px solid var(--acc);font-size:14px;color:var(--txt)}
 .sub-sec{margin:18px 0 2px}
 .sub-sec h3{margin:0;font:700 18px/1 var(--display);letter-spacing:.04em}
 .sub-sec .meta{margin:4px 0 0}
@@ -191,68 +192,161 @@ const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto'
 // pesoObj: peso objetivo; la primera serie del ejercicio se precarga con él (null = sin objetivo).
 const ej = o => ({bloque:'principal', tipo:'reps', equipo:'libre', unidad:'kg', paso:1, series:3, objetivo:'10', ss:'', indicacion:'', pesoObj:null, porLado:false, ...o});
 
+// Versión de la rutina. Si los datos guardados son de una versión anterior, se reemplaza la rutina (los registros se conservan).
+const RUT_VER = 2;
+
+// Bloques compartidos: se copian a cada día que los usa.
+const LISTA = (pref, bloque, items) => items.map((x, i) => ({id: `${pref}-${bloque.slice(0,3)}${i}`, bloque, tipo:'lista', ...x}));
+const CAL_RODILLA = [
+  {nombre:'Bici estática', objetivo:'3–5 min'},
+  {nombre:'Spanish squat (agarrado del rack)', objetivo:'5 × 45 s'},
+  {nombre:'Extensión isométrica de rodilla (~60°)', objetivo:'3 × 45 s'},
+  {nombre:'Sentadilla lateral', objetivo:'15 reps'},
+  {nombre:'Caminata hacia atrás', objetivo:'2 min'},
+  {nombre:'Puente de glúteo', objetivo:'2 × 12'},
+];
+const CAL_UPPER = [
+  {nombre:'Bici estática', objetivo:'3–5 min'},
+  {nombre:'Círculos de brazo', objetivo:'10 adelante y 10 atrás', indicacion:'Pequeños a grandes'},
+  {nombre:'Wall slides', objetivo:'2 × 10', indicacion:'Hasta donde no duela'},
+  {nombre:'Gato-camello + rotación torácica', objetivo:'8 + 8 por lado'},
+  {nombre:'Rotación externa con cable ligero', objetivo:'2 × 15', indicacion:'Codo fijo'},
+  {nombre:'Aproximación press al 50%', objetivo:'10–12 reps', indicacion:'Antes del primer press'},
+  {nombre:'Aproximación press al 70%', objetivo:'5–6 reps', indicacion:'Antes del primer press'},
+];
+const EST_LOWER = [
+  {nombre:'Isquiotibiales', objetivo:'2 × 30 s por pierna', indicacion:'Pierna estirada sobre banca o sentado · espalda recta'},
+  {nombre:'Glúteo (figura 4 acostado)', objetivo:'2 × 30 s por lado', indicacion:'Jala el muslo hacia el pecho'},
+  {nombre:'Flexores de cadera (zancada)', objetivo:'2 × 30 s por lado', indicacion:'Rodilla de atrás extendida, sin apoyarla'},
+  {nombre:'Aductores (mariposa sentado)', objetivo:'2 × 30 s', indicacion:'Sin rebotar'},
+  {nombre:'Pantorrilla en pared, pierna recta', objetivo:'2 × 30 s por pierna', indicacion:'Talón pegado al piso'},
+  {nombre:'Pantorrilla en pared, rodilla flexionada (sóleo)', objetivo:'2 × 30 s por pierna', indicacion:'Talón pegado al piso'},
+  {nombre:'Rodillas al pecho acostado', objetivo:'2 × 30 s', indicacion:'Suave'},
+  {nombre:'Cuádriceps (opcional)', objetivo:'1 × 20–30 s por pierna', indicacion:'Talón al glúteo con tensión leve. Si molesta el tendón rotuliano, sáltalo'},
+];
+const EST_UPPER = [
+  {nombre:'Pecho en pared', objetivo:'2 × 30 s por lado', indicacion:'Codo a 90° o más bajo'},
+  {nombre:'Brazo cruzado al pecho', objetivo:'2 × 30 s por brazo', indicacion:'Deltoide posterior'},
+  {nombre:'Trapecio superior', objetivo:'2 × 30 s por lado'},
+  {nombre:'Antebrazo: flexores y extensores', objetivo:'30 s cada uno'},
+  {nombre:'Rotación torácica en el piso', objetivo:'8 por lado'},
+];
+const EST_MARTES = [
+  {nombre:'Pecho en pared', objetivo:'2 × 30 s por lado'},
+  {nombre:'Brazo cruzado al pecho', objetivo:'2 × 30 s por brazo'},
+  {nombre:'Trapecio superior', objetivo:'2 × 30 s por lado'},
+  {nombre:'Pantorrilla en pared', objetivo:'2 × 30 s por pierna', indicacion:'Talón pegado al piso'},
+];
+const EST_CORE = [
+  {nombre:'Gato-camello', objetivo:'8 reps', indicacion:'Lento'},
+  {nombre:'Rotación torácica en el piso (open book)', objetivo:'8 por lado', indicacion:'Sin forzar'},
+  {nombre:'Rodillas al pecho acostado', objetivo:'2 × 30 s', indicacion:'Para la zona lumbar'},
+  {nombre:'Inclinación lateral sentado', objetivo:'2 × 20–30 s por lado', indicacion:'Una mano en el piso, la otra a lo largo del costado · sin subir el brazo'},
+  {nombre:'Esfinge', objetivo:'2 × 20–30 s', indicacion:'Solo si el hombro no molesta'},
+];
+const REGLA_HOMBRO = 'Regla del hombro: dolor máximo 3/10 y que se resuelva en 24 h. Si algo duele, corta ese ejercicio.';
+
 const SEED = {
-  dom:{titulo:'Lower 1', ejercicios:[
-    ej({id:'d1', nombre:'Sentadilla copa', equipo:'mancuerna', unidad:'lb', series:3, objetivo:'10', pesoObj:45, indicacion:'Mancuerna de 45 lb'}),
-    ej({id:'d2', nombre:'RDL con mancuernas', equipo:'mancuerna', unidad:'lb', series:3, objetivo:'10', pesoObj:35, indicacion:'Rango completo'}),
-    ej({id:'d3', nombre:'Step-down', series:3, objetivo:'10', porLado:true, indicacion:'Sin peso'}),
-    ej({id:'d4', nombre:'Copenhagen plank', tipo:'tiempo', unidad:'', paso:5, series:3, objetivo:'20', porLado:true})
+  dom:{titulo:'Lower 1', nota:'', ejercicios:[
+    ...LISTA('dom','calentamiento',CAL_RODILLA),
+    ej({id:'dom-1', nombre:'Jump hold', unidad:'', series:4, objetivo:'5', indicacion:'Peso corporal · RIR 0–1'}),
+    ej({id:'dom-2', nombre:'Sentadilla búlgara', equipo:'mancuerna', unidad:'lb', pesoObj:25, series:4, objetivo:'6–8', porLado:true, indicacion:'25 lb por mano · RIR 2'}),
+    ej({id:'dom-3', nombre:'RDL a una pierna', equipo:'mancuerna', unidad:'lb', pesoObj:15, series:3, objetivo:'8–10', porLado:true, indicacion:'15–20 lb · RIR 2–3'}),
+    ej({id:'dom-4', nombre:'Curl de pierna', unidad:'barras', paso:0.5, pesoObj:3.5, series:3, objetivo:'12', indicacion:'3.5–4 barras · RIR 1–2'}),
+    ej({id:'dom-5', nombre:'Step-down excéntrico', unidad:'', series:3, objetivo:'8–10', porLado:true, indicacion:'Sin peso · bajada de 3–4 s · control'}),
+    ej({id:'dom-6', nombre:'Máquina de aductores (cerrando)', unidad:'barras', series:3, objetivo:'12–15', indicacion:'Calibra · RIR 1–2'}),
+    ej({id:'dom-7', nombre:'Máquina de abductores (abriendo)', unidad:'barras', series:2, objetivo:'15', indicacion:'Calibra · RIR 2'}),
+    ej({id:'dom-8', nombre:'Pantorrilla en press', unidad:'barras', series:4, objetivo:'15–20', indicacion:'Calibra · RIR 1'}),
+    ...LISTA('dom','estiramiento',EST_LOWER),
   ]},
-  lun:{titulo:'Upper 1', ejercicios:[
-    {id:'c1', nombre:'Bici estática', bloque:'calentamiento', tipo:'lista', objetivo:'3-5 min', indicacion:'Ritmo suave, que suba la temperatura'},
-    {id:'c2', nombre:'Círculos de brazo', bloque:'calentamiento', tipo:'lista', objetivo:'10 adelante + 10 atrás por brazo', indicacion:'Pequeños y que van creciendo, sin pasar el punto de molestia'},
-    {id:'c3', nombre:'Rotación de hombros (encoger y rodar)', bloque:'calentamiento', tipo:'lista', objetivo:'10 adelante + 10 atrás', indicacion:'Lento'},
-    {id:'c4', nombre:'Gato-camello', bloque:'calentamiento', tipo:'lista', objetivo:'8 reps', indicacion:'Movilidad de espalda alta'},
-    {id:'c5', nombre:'Rotación torácica en cuadrupedia', bloque:'calentamiento', tipo:'lista', objetivo:'8 por lado', indicacion:'Mano atrás de la cabeza, sin forzar'},
-    {id:'c6', nombre:'Rotación externa con cable (codo al costado)', bloque:'calentamiento', tipo:'lista', objetivo:'2 × 15', indicacion:'Peso muy ligero, activa el manguito'},
-    {id:'c7', nombre:'Aproximación press declinado 50%', bloque:'calentamiento', tipo:'lista', objetivo:'1 serie × 10-12', indicacion:'~50% del peso de trabajo'},
-    {id:'c8', nombre:'Aproximación press declinado 70%', bloque:'calentamiento', tipo:'lista', objetivo:'1 serie × 5-6', indicacion:'~70% del peso de trabajo'},
-    ej({id:'u1', nombre:'Press declinado con mancuernas', equipo:'mancuerna', unidad:'lb', series:3, objetivo:'8-10', pesoObj:30, indicacion:'30 lb c/u · pausa 1-2 s abajo · bajada de 3 s · RIR 1-2'}),
-    ej({id:'u2', nombre:'Remo unilateral en máquina (agarre neutro)', series:3, objetivo:'8-10', unidad:'kg', paso:1, pesoObj:17.5, indicacion:'17-18 kg por lado · RIR 1-2'}),
-    ej({id:'u3', nombre:'Fly declinado', series:2, objetivo:'12-15', unidad:'lb', paso:2.5, pesoObj:17.5, indicacion:'17.5 lb · RIR 1-2'}),
-    ej({id:'u4', nombre:'Face pull (ligero)', series:3, objetivo:'15', unidad:'barras', paso:1, pesoObj:4, indicacion:'4 barras · RIR 2'}),
-    ej({id:'u5', nombre:'Extensión de tríceps en cable con cuerda', series:2, objetivo:'10-12', unidad:'barras', paso:1, indicacion:'Calibra · RIR 1-2'}),
-    ej({id:'u6', nombre:'Curl predicador', series:2, objetivo:'12', unidad:'barras', paso:1, pesoObj:3, indicacion:'3 barras · RIR 1'}),
-    ej({id:'u7', nombre:'Curl de muñeca invertido (palma abajo)', series:2, objetivo:'15-20', unidad:'lb', paso:2.5, pesoObj:10, indicacion:'10-12.5 lb · RIR 1'}),
-    ej({id:'u8', nombre:'Dead bug', series:3, objetivo:'10', porLado:true, indicacion:'Peso corporal'}),
-    ej({id:'u9', nombre:'Bird dog', series:3, objetivo:'10', porLado:true, indicacion:'Peso corporal'}),
-    ej({id:'u10', nombre:'Suitcase carry', equipo:'mancuerna', unidad:'lb', series:3, objetivo:'20-30 m', porLado:true, pesoObj:30, indicacion:'30 lb o más'}),
-    ej({id:'u11', nombre:'Elevación lateral', equipo:'mancuerna', unidad:'lb', series:4, objetivo:'10', indicacion:'Peso ligero por molestia de hombro'}),
-    {id:'s1', nombre:'Pecho en marco de puerta o pared', bloque:'estiramiento', tipo:'lista', objetivo:'2 × 30 s por lado', indicacion:'Codo a 90° o más bajo'},
-    {id:'s2', nombre:'Brazo cruzado al pecho', bloque:'estiramiento', tipo:'lista', objetivo:'2 × 30 s por brazo', indicacion:'Deltoide posterior'},
-    {id:'s3', nombre:'Trapecio superior', bloque:'estiramiento', tipo:'lista', objetivo:'2 × 30 s por lado', indicacion:'Oreja al hombro, mano suave'},
-    {id:'s4', nombre:'Antebrazo: flexores y extensores', bloque:'estiramiento', tipo:'lista', objetivo:'30 s cada uno por brazo', indicacion:'Palma arriba y palma abajo'},
-    {id:'s5', nombre:'Postura del niño con brazos al frente', bloque:'estiramiento', tipo:'lista', objetivo:'2 × 30 s', indicacion:'Solo si no molesta'},
-    {id:'s6', nombre:'Rotación torácica en el piso (open book)', bloque:'estiramiento', tipo:'lista', objetivo:'8 por lado'}
+  lun:{titulo:'Upper 1', nota:REGLA_HOMBRO, ejercicios:[
+    ...LISTA('lun','calentamiento',CAL_UPPER),
+    ej({id:'lun-1', ss:'A', nombre:'Press declinado con mancuernas', equipo:'mancuerna', unidad:'lb', pesoObj:30, series:3, objetivo:'8–10', indicacion:'30 lb c/u · pausa 1–2 s abajo · bajada de 3 s · RIR 1–2'}),
+    ej({id:'lun-2', ss:'A', nombre:'Dead bug', unidad:'', porLado:true, series:3, objetivo:'10', indicacion:'Peso corporal'}),
+    ej({id:'lun-3', ss:'B', nombre:'Remo unilateral en máquina (agarre neutro)', unidad:'kg', pesoObj:17.5, series:3, objetivo:'8–10', indicacion:'17–18 kg por lado · RIR 1–2'}),
+    ej({id:'lun-4', ss:'B', nombre:'Bird dog', unidad:'', porLado:true, series:3, objetivo:'10', indicacion:'Peso corporal'}),
+    ej({id:'lun-5', ss:'C', nombre:'Fly declinado', equipo:'mancuerna', unidad:'lb', pesoObj:17.5, series:2, objetivo:'12–15', indicacion:'17.5 lb c/u · RIR 1–2'}),
+    ej({id:'lun-6', ss:'C', nombre:'Suitcase carry', equipo:'mancuerna', unidad:'lb', pesoObj:30, series:3, objetivo:'20–30 m', porLado:true, indicacion:'30 lb o más · por lado'}),
+    ej({id:'lun-7', nombre:'Elevación en plano escapular (scaption)', equipo:'mancuerna', unidad:'lb', pesoObj:5, series:2, objetivo:'12–15', indicacion:'5–7.5 lb · pulgares arriba, 30° al frente · solo hasta donde no duela · RIR 3'}),
+    ej({id:'lun-8', nombre:'Face pull', unidad:'barras', pesoObj:4, series:3, objetivo:'15', indicacion:'4 barras · RIR 2'}),
+    ej({id:'lun-9', nombre:'Press francés con barra', series:3, objetivo:'8–12', indicacion:'Calibra · RIR 1–2'}),
+    ej({id:'lun-10', nombre:'Curl predicador', unidad:'barras', pesoObj:3, series:2, objetivo:'12', indicacion:'3 barras · RIR 1'}),
+    ej({id:'lun-11', nombre:'Curl de muñeca invertido (palma abajo)', equipo:'mancuerna', unidad:'lb', pesoObj:10, series:2, objetivo:'15–20', indicacion:'10–12.5 lb · RIR 1'}),
+    ...LISTA('lun','estiramiento',EST_UPPER),
   ]},
-  mar:{titulo:'Rehab', ejercicios:[]},
-  mie:{titulo:'Técnica + Core en casa', ejercicios:[
-    {id:'wc1', nombre:'Círculos de brazo', bloque:'calentamiento', tipo:'lista', objetivo:'10 adelante + 10 atrás', indicacion:'Pequeños, sin pasar el punto de molestia'},
-    {id:'wc2', nombre:'Rotación de hombros', bloque:'calentamiento', tipo:'lista', objetivo:'10 adelante + 10 atrás'},
-    {id:'wc3', nombre:'Gato-camello', bloque:'calentamiento', tipo:'lista', objetivo:'8 reps'},
+  mar:{titulo:'Rehab', nota:'Después del vóley, ligero. Si la rodilla quedó cargada del vóley, haz solo Wall sit y Spanish squat.', ejercicios:[
+    ej({id:'mar-1', grupo:'Rodilla', nombre:'Wall sit', tipo:'tiempo', series:4, objetivo:'30–45', paso:5}),
+    ej({id:'mar-2', grupo:'Rodilla', nombre:'Spanish squat', tipo:'tiempo', series:5, objetivo:'45', paso:5}),
+    ej({id:'mar-3', grupo:'Rodilla', nombre:'Extensión de cuádriceps en máquina', unidad:'barras', series:3, objetivo:'12–15', indicacion:'Bajada de 3 s'}),
+    ej({id:'mar-4', grupo:'Rodilla', nombre:'Sentadilla con inclinación (peso corporal)', unidad:'', series:3, objetivo:'10–15', indicacion:'Bajada lenta'}),
+    ej({id:'mar-5', grupo:'Hombro · elevación', nombre:'Wall slides', unidad:'', series:2, objetivo:'10–12'}),
+    ej({id:'mar-6', grupo:'Hombro · elevación', nombre:'Flexión de hombro acostado en banca', unidad:'', series:2, objetivo:'10'}),
+    ej({id:'mar-7', grupo:'Hombro · elevación', nombre:'Scaption sin peso', unidad:'', series:2, objetivo:'10'}),
+    ej({id:'mar-8', grupo:'Hombro · elevación', nombre:'Y en banca inclinada, boca abajo', unidad:'', series:2, objetivo:'8–10'}),
+    ej({id:'mar-9', grupo:'Hombro · empuje', nombre:'Push-up plus en pared', unidad:'', series:2, objetivo:'10–15'}),
+    ej({id:'mar-10', grupo:'Hombro · empuje', nombre:'Press de pecho en máquina, agarre neutro', unidad:'', series:2, objetivo:'12–15', indicacion:'Muy ligero'}),
+    ej({id:'mar-11', grupo:'Hombro · empuje', nombre:'Rotación externa con cable', unidad:'', series:1, objetivo:'15'}),
+    ...LISTA('mar','estiramiento',EST_MARTES),
+  ]},
+  mie:{titulo:'Técnica + Core en casa', nota:'', ejercicios:[
+    ...LISTA('mie','calentamiento',[
+      {nombre:'Círculos de brazo', objetivo:'10 adelante y 10 atrás', indicacion:'Pequeños, que vayan creciendo'},
+      {nombre:'Rotación de hombros', objetivo:'10 adelante y 10 atrás'},
+      {nombre:'Gato-camello', objetivo:'8 reps'},
+    ]),
     ej({id:'w1', grupo:'Técnica', nombre:'Posición base + deslizamientos defensivos', tipo:'tiempo', series:3, objetivo:'30', paso:5, indicacion:'Sin salto. Cadera baja, pecho arriba. 3–4 pasos laterales, frena y regresa'}),
     ej({id:'w2', grupo:'Técnica', nombre:'Footwork de aproximación en seco', series:3, objetivo:'8', indicacion:'Sin salto. Velocidad media, 3 pasos'}),
-    ej({id:'w3', grupo:'Técnica', nombre:'Pase de antebrazo contra pared (balón ponchado, ~1.5 m)', series:3, objetivo:'25-30', indicacion:'Toques. Brazos bajo la altura del hombro'}),
+    ej({id:'w3', grupo:'Técnica', nombre:'Pase de antebrazo contra pared (balón ponchado, ~1.5 m)', series:3, objetivo:'25–30', indicacion:'Toques. Brazos bajo la altura del hombro'}),
     ej({id:'w4', grupo:'Técnica', nombre:'Recepción: plataforma + desplazamiento lateral y regreso', series:3, objetivo:'10', indicacion:'Una repetición = ir a un lado y volver. Alterna lados'}),
-    ej({id:'w5', grupo:'Técnica', nombre:'Rebote y atrapada a una mano contra pared', equipo:'libre', unidad:'lb', pesoObj:2, series:3, objetivo:'10', porLado:true, indicacion:'Pelotita de 2 lb · a la altura del pecho · por mano'}),
-    ej({id:'w6', grupo:'Técnica', nombre:'Rebote con cambio de dirección', equipo:'libre', unidad:'lb', pesoObj:2, series:3, objetivo:'10', indicacion:'Pelotita de 2 lb · lanzamiento en ángulo, de abajo hacia arriba'}),
-    ej({id:'w7', grupo:'Core', nombre:'Hollow body hold', tipo:'tiempo', series:3, objetivo:'20', paso:5, indicacion:'Zona lumbar pegada al piso. Si no puedes, flexiona rodillas'}),
-    ej({id:'w8', grupo:'Core', nombre:'Dead bug con mancuerna', equipo:'mancuerna', unidad:'lb', pesoObj:10, series:3, objetivo:'10', porLado:true, indicacion:'Bajada de 4 s · mancuerna arriba sin moverla'}),
-    ej({id:'w9', grupo:'Core', nombre:'Reverse crunch', series:3, objetivo:'12-15', indicacion:'Elevación de cadera acostado · sin balanceo'}),
-    ej({id:'w10', grupo:'Core', nombre:'Crunch con mancuerna en el pecho', equipo:'mancuerna', unidad:'lb', pesoObj:10, series:3, objetivo:'12-15', indicacion:'Bajada de 4 s · pausa de 2 s arriba'}),
-    ej({id:'w11', grupo:'Core', nombre:'Plancha lateral con elevación de cadera', series:3, objetivo:'10', porLado:true, indicacion:'Pausa de 1 s arriba'}),
-    ej({id:'w12', grupo:'Core', nombre:'Suitcase carry con mochila', series:3, objetivo:'30 m', porLado:true, pesoObj:15, indicacion:'Mochila de 15–20 kg · torso erguido, sin inclinarte · alternativa: 30–40 s por lado'}),
-    ej({id:'w13', grupo:'Core', nombre:'Bird dog con pausa', series:3, objetivo:'8', porLado:true, indicacion:'Pausa de 3 s · cadera sin rotar'}),
-    {id:'ws1', nombre:'Rotación torácica en el piso', bloque:'estiramiento', tipo:'lista', objetivo:'8 por lado'},
-    {id:'ws2', nombre:'Postura del niño', bloque:'estiramiento', tipo:'lista', objetivo:'2 × 30 s', indicacion:'Solo si no te molesta el hombro'}
+    ej({id:'w5', grupo:'Técnica', nombre:'Rebote y atrapada a una mano con la pelotita', equipo:'libre', unidad:'lb', pesoObj:2, series:3, objetivo:'10', porLado:true, indicacion:'Pelotita de 2 lb · de abajo hacia arriba · por mano'}),
+    ej({id:'w6', grupo:'Técnica', nombre:'Rebote con cambio de dirección con la pelotita', equipo:'libre', unidad:'lb', pesoObj:2, series:3, objetivo:'10', indicacion:'Pelotita de 2 lb · lanzamiento en ángulo, de abajo hacia arriba'}),
+    ej({id:'w7', grupo:'Core', nombre:'Hollow body hold', tipo:'tiempo', series:3, objetivo:'20–30', paso:5}),
+    ej({id:'w8', grupo:'Core', nombre:'Dead bug con mancuerna', equipo:'mancuerna', unidad:'lb', pesoObj:10, series:3, objetivo:'10', porLado:true, indicacion:'Mancuerna de 10 lb'}),
+    ej({id:'w9', grupo:'Core', nombre:'Reverse crunch', series:3, objetivo:'12–15'}),
+    ej({id:'w10', grupo:'Core', nombre:'Crunch con mancuerna en el pecho', equipo:'mancuerna', unidad:'lb', pesoObj:10, series:3, objetivo:'12–15', indicacion:'Mancuerna de 10 lb'}),
+    ej({id:'w11', grupo:'Core', nombre:'Plancha lateral con elevación de cadera', series:3, objetivo:'10', porLado:true}),
+    ej({id:'w12', grupo:'Core', nombre:'Suitcase carry con mochila', unidad:'kg', pesoObj:15, series:3, objetivo:'30 m', porLado:true, indicacion:'Mochila de 15–20 kg · alternativa: 30–40 s por lado'}),
+    ej({id:'w13', grupo:'Core', nombre:'Bird dog con pausa', series:3, objetivo:'8', porLado:true, indicacion:'Pausa de 3 s'}),
+    ...LISTA('mie','estiramiento', EST_CORE),
   ]},
-  jue:{titulo:'Lower 2', ejercicios:[]},
-  vie:{titulo:'Upper 2', ejercicios:[]}
+  jue:{titulo:'Lower 2', nota:'', ejercicios:[
+    ...LISTA('jue','calentamiento',CAL_RODILLA),
+    ej({id:'jue-1', nombre:'Swing con mancuerna', equipo:'mancuerna', unidad:'lb', pesoObj:30, series:4, objetivo:'8', indicacion:'30 lb · cadera explosiva · RIR 3–4'}),
+    ej({id:'jue-2', nombre:'Jump hold', unidad:'', series:4, objetivo:'5', indicacion:'Peso corporal · RIR 0–1'}),
+    ej({id:'jue-3', nombre:'Sentadilla copa', equipo:'mancuerna', unidad:'lb', pesoObj:50, series:3, objetivo:'8–10', indicacion:'50–55 lb · RIR 2'}),
+    ej({id:'jue-4', nombre:'Pull-through en polea baja con cuerda', unidad:'barras', series:3, objetivo:'12–15', indicacion:'Calibra · RIR 2'}),
+    ej({id:'jue-5', ss:'A', nombre:'Curl de pierna', unidad:'barras', paso:0.5, pesoObj:3.5, series:3, objetivo:'12', indicacion:'3.5–4 barras · RIR 1–2'}),
+    ej({id:'jue-6', ss:'A', nombre:'Farmer’s carry', equipo:'mancuerna', unidad:'lb', pesoObj:30, series:3, objetivo:'30 m', indicacion:'30–35 lb c/u · RIR 1–2'}),
+    ej({id:'jue-7', nombre:'Máquina de aductores', unidad:'barras', series:3, objetivo:'12–15', indicacion:'Calibra · RIR 1–2'}),
+    ej({id:'jue-8', nombre:'Desplazamientos laterales', unidad:'', series:3, objetivo:'10 pasos', porLado:true, indicacion:'Peso corporal · técnica'}),
+    ej({id:'jue-9', nombre:'Pantorrilla en press', unidad:'barras', series:4, objetivo:'15–20', indicacion:'Calibra · RIR 1'}),
+    ...LISTA('jue','estiramiento',EST_LOWER),
+  ]},
+  vie:{titulo:'Upper 2', nota:REGLA_HOMBRO, ejercicios:[
+    ...LISTA('vie','calentamiento',CAL_UPPER),
+    ej({id:'vie-1', nombre:'Jalón al pecho (asa corta neutra)', unidad:'barras', paso:0.5, pesoObj:5.5, series:3, objetivo:'8–10', indicacion:'5.5–6 barras · RIR 1–2'}),
+    ej({id:'vie-2', ss:'A', nombre:'Press inclinado con mancuernas', equipo:'mancuerna', unidad:'lb', pesoObj:30, series:3, objetivo:'8–10', indicacion:'30 lb c/u · pausa 1–2 s abajo · bajada de 3 s · RIR 1–2'}),
+    ej({id:'vie-3', ss:'A', nombre:'Dead bug', unidad:'', porLado:true, series:3, objetivo:'10', indicacion:'Peso corporal'}),
+    ej({id:'vie-4', ss:'B', nombre:'Fly inclinado', equipo:'mancuerna', unidad:'lb', pesoObj:15, series:2, objetivo:'12–15', indicacion:'15–17.5 lb · RIR 1–2'}),
+    ej({id:'vie-5', ss:'B', nombre:'Bird dog', unidad:'', porLado:true, series:3, objetivo:'10'}),
+    ej({id:'vie-6', nombre:'Reverse fly en banca inclinada, boca abajo', equipo:'mancuerna', unidad:'lb', pesoObj:5, series:3, objetivo:'12–15', indicacion:'5–7.5 lb · RIR 2–3'}),
+    ej({id:'vie-7', ss:'C', nombre:'Elevación lateral en cable (lean-away)', unidad:'barras', series:2, objetivo:'12–15', indicacion:'Muy ligero, solo hasta donde no duela · RIR 3'}),
+    ej({id:'vie-8', ss:'C', nombre:'Plancha lateral', tipo:'tiempo', unidad:'', porLado:true, series:3, objetivo:'30', paso:5}),
+    ej({id:'vie-9', nombre:'Extensión en polea alta con barra V, agarre supino', unidad:'barras', series:3, objetivo:'10–12', indicacion:'Calibra · RIR 1–2'}),
+    ej({id:'vie-10', nombre:'Curl martillo', equipo:'mancuerna', unidad:'lb', pesoObj:22, series:2, objetivo:'12', indicacion:'22–25 lb · RIR 1'}),
+    ej({id:'vie-11', nombre:'Curl de muñeca (palma arriba)', equipo:'mancuerna', unidad:'lb', pesoObj:15, series:2, objetivo:'15–20', indicacion:'15–17.5 lb · RIR 1'}),
+    ej({id:'vie-t1', grupo:'Técnica', nombre:'Posición base + deslizamientos defensivos', tipo:'tiempo', series:3, objetivo:'30', paso:5}),
+    ej({id:'vie-t2', grupo:'Técnica', nombre:'Footwork de aproximación en seco', series:3, objetivo:'8'}),
+    ej({id:'vie-t3', grupo:'Técnica', nombre:'Pase de antebrazo con balón ponchado', series:3, objetivo:'25–30'}),
+    ...LISTA('vie','estiramiento', EST_UPPER),
+  ]},
 };
 
 // ---------- carga segura y normalización (compatible con datos de versiones anteriores) ----------
 function normalizar(d){
-  if(!d || typeof d !== 'object' || !d.rutina || !Array.isArray(d.sesiones)) return null;
+  if(!d || typeof d !== 'object' || !Array.isArray(d.sesiones)) return null;
+  if(!d.rutina || (d.rutinaVer || 0) < RUT_VER) d.rutina = structuredClone(SEED);
+  d.rutinaVer = RUT_VER;
   for(const [k] of DIAS){
     if(!d.rutina[k]) d.rutina[k] = {titulo: NOMBRE_DIA[k], ejercicios: []};
     d.rutina[k].titulo = String(d.rutina[k].titulo || NOMBRE_DIA[k]);
@@ -273,7 +367,7 @@ function normalizar(d){
 function cargarDatos(){
   let raw = null;
   try { raw = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { raw = null; }
-  return normalizar(raw) || {rutina: structuredClone(SEED), sesiones: []};
+  return normalizar(raw) || normalizar({sesiones: []});
 }
 let db = cargarDatos();
 
@@ -470,7 +564,7 @@ function vistaHoy(){
   let html = chipsDias() + `<div class="dia"><h1>${esc(d.titulo)}</h1>
     <div class="resumen tnum">${completos}/${prin.length} ejercicios</div></div>
     <div class="barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-label="Avance del día"><i style="width:${pct}%"></i></div>
-    <div class="meta tnum">${NOMBRE_DIA[ui.dia]} · ${hechasS} de ${totalS} series</div>`;
+    <div class="meta tnum">${NOMBRE_DIA[ui.dia]} · ${hechasS} de ${totalS} series</div>${d.nota ? `<p class="nota-dia">${esc(d.nota)}</p>` : ''}`;
   if(!d.ejercicios.length) html += `<p class="meta" style="margin-top:24px">Este día no tiene ejercicios. Agrégalos en Rutina.</p>`;
 
   for(const [clave, etiqueta] of BLOQUES){
