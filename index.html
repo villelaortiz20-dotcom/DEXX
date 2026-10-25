@@ -16,8 +16,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <title>Registro de gym</title>
 <style>
-/* Paleta: negro, grises y naranja (naranja solo para lo activo y la acción principal).
-   Tipografía: Big Shoulders (títulos y números) + IBM Plex Sans (texto y datos). */
 :root{
   --bg:#000;--s1:#111;--s2:#1c1c1c;--line:#2e2e2e;
   --txt:#f2f2f2;--mut:#8c8c8c;--acc:#ff6a00;--acc-ink:#000;--warn:#ff7373;
@@ -34,18 +32,19 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 button:active{transform:translateY(1px)}
 button.pri{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:600}
 button.sec{background:transparent}
-button:disabled{opacity:.35;cursor:default}
-/* 16px mínimo en campos para que iOS/Android no hagan zoom al escribir */
+button:disabled{opacity:.4;cursor:default;transform:none}
+/* 16px mínimo en campos para que el celular no haga zoom al escribir */
 input,select,textarea{font-size:16px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:48px}
 textarea{min-height:76px;resize:vertical}
 input[type=range]{padding:0;min-height:44px;accent-color:var(--acc)}
+input[type=checkbox]{width:22px;min-height:22px;accent-color:var(--acc)}
 label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .meta{color:var(--mut);font-size:14px}
 .tnum{font-variant-numeric:tabular-nums}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
-/* Cabecera del día */
+/* Cabecera */
 .dia{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:14px 0 6px}
 .dia h1{margin:0;font:800 42px/0.95 var(--display)}
 .dia .resumen{font-size:14px;color:var(--mut);text-align:right;white-space:nowrap}
@@ -60,6 +59,7 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 .bloque{display:flex;justify-content:space-between;align-items:baseline;margin:22px 0 6px;padding-bottom:6px;border-bottom:1px solid var(--line)}
 .bloque h2{margin:0;font:700 22px/1 var(--display);letter-spacing:.02em}
 .bloque span{font-size:13px;color:var(--mut)}
+.bloque-sec{margin-top:12px}
 
 /* Ejercicio */
 .ex{border:1px solid var(--line);border-left:3px solid transparent;border-radius:4px;margin:8px 0;background:var(--s1)}
@@ -69,7 +69,7 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 .ex-h .t{flex:1;min-width:0}
 .ex-h h3{margin:0;font:600 19px/1.15 var(--body)}
 .ex-h .sub{margin:3px 0 0;font-size:13px;color:var(--mut)}
-.dots{display:flex;gap:5px;flex:0 0 auto}
+.dots{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;max-width:110px;flex:0 0 auto}
 .dots i{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--mut)}
 .dots i.on{background:var(--acc);border-color:var(--acc)}
 .hecho .dots i.on{background:var(--txt);border-color:var(--txt)}
@@ -77,6 +77,8 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 .ex-p{padding:0 12px 12px;border-top:1px solid var(--line)}
 .ex-p .hist{margin:10px 0 0;font-size:14px}
 .ex-p .hist b{color:var(--txt);font-weight:500}
+.sugerencia{border:1px solid var(--acc);border-radius:8px;padding:10px 12px;margin-top:10px;font-size:15px}
+.sugerencia b{color:var(--acc);font-weight:600}
 .ej-sets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .ej-sets .chip-s{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .ej-sets .chip-s button{min-height:36px;border:0;border-radius:0;background:transparent;padding:0 9px;font-size:14px}
@@ -86,7 +88,8 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 .edit-bar button{min-height:40px;font-size:14px}
 
 /* Registro de serie */
-.stepper{display:grid;grid-template-columns:76px 1fr 76px;align-items:center;gap:8px;margin:12px 0 4px}
+.serie-l{font-size:14px;color:var(--mut);margin-top:12px}
+.stepper{display:grid;grid-template-columns:76px 1fr 76px;align-items:center;gap:8px;margin:8px 0 4px}
 .stepper button{min-height:76px;font:400 36px/1 var(--body);border-radius:12px}
 .stepper .c{text-align:center}
 .stepper .v{width:100%;background:none;border:0;min-height:auto;padding:0;text-align:center;font:800 56px/1 var(--display);font-variant-numeric:tabular-nums}
@@ -97,7 +100,7 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 .rir button+button{border-left:1px solid var(--line)}
 .rir button.on{background:var(--txt);color:#000}
 .rir-l{font-size:13px;color:var(--mut)}
-.nota-ej{margin-top:10px;font-size:16px;min-height:60px}
+.nota-ej{margin-top:10px;min-height:60px}
 
 /* Calentamiento / estiramiento */
 .item{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:4px;background:var(--s1);padding:12px;margin:6px 0;cursor:pointer;min-height:64px}
@@ -110,24 +113,54 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 
 .sup{border-left:2px solid var(--acc);padding-left:10px;margin:14px 0 0}
 .sup-t{font:700 15px var(--display);letter-spacing:.06em;color:var(--acc);margin-bottom:-2px}
-.bloque-sec{margin-top:12px}
-.panel-cierre{border:1px solid var(--line);border-radius:4px;padding:14px;margin:18px 0 0;background:var(--s1)}
+.panel{border:1px solid var(--line);border-radius:4px;padding:14px;margin:18px 0 0;background:var(--s1)}
 .acciones{display:grid;gap:8px;margin-top:12px}
+.cerrada{border:1px solid var(--line);border-radius:4px;padding:12px;margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 
-nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:#000;border-top:1px solid var(--line)}
-nav button{min-height:56px;border:0;background:transparent;font-weight:500;color:var(--mut)}
+/* Calendario */
+.mes{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:12px 0}
+.mes h2{margin:0;font:800 30px/1 var(--display)}
+.mes button{min-height:44px;min-width:52px;padding:0 12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 12px}
+.stats div{border:1px solid var(--line);border-radius:4px;padding:10px;background:var(--s1)}
+.stats b{display:block;font:800 28px/1 var(--display);font-variant-numeric:tabular-nums}
+.stats span{font-size:12px;color:var(--mut)}
+.grid-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.grid-cal .dn{font-size:12px;color:var(--mut);text-align:center;padding:4px 0}
+.dcell{aspect-ratio:1/1;border:1px solid var(--line);border-radius:8px;background:var(--s1);color:var(--txt);min-height:44px;padding:0;position:relative;font-size:15px;font-variant-numeric:tabular-nums}
+.dcell.fuera{visibility:hidden}
+.dcell.hoy{border-color:var(--txt)}
+.dcell.hecha{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:700}
+.dcell.parcial{border-color:var(--acc);color:var(--acc)}
+.dcell.falta{color:var(--mut);background:transparent;text-decoration:line-through}
+.dcell.plan{color:var(--mut)}
+.dcell.sel{box-shadow:inset 0 0 0 2px var(--txt)}
+.leyenda{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--mut);margin:10px 0}
+.leyenda i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line)}
+
+/* Fotos */
+.fotos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.fotos-grid figure{margin:0;position:relative}
+.fotos-grid img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:6px;display:block;background:var(--s2)}
+.fotos-grid figcaption{font-size:12px;color:var(--mut);margin-top:4px}
+.semana{margin-top:18px}
+.semana h3{margin:0 0 6px;font:700 20px/1 var(--display)}
+
+nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:#000;border-top:1px solid var(--line)}
+nav button{min-height:56px;border:0;background:transparent;font-weight:500;color:var(--mut);padding:0 4px;font-size:15px}
 nav button.on{color:#000;background:var(--txt);border-radius:10px;font-weight:600}
 
 #toast{position:fixed;left:50%;bottom:112px;transform:translateX(-50%);background:var(--txt);color:#000;padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center;font-weight:500}
 #toast.on{opacity:1}
 
-/* Rutina / historial */
+/* Rutina / respaldo */
 .card{border:1px solid var(--line);border-radius:4px;padding:14px;margin:8px 0;background:var(--s1)}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .btns{display:flex;gap:6px}
 .btns button{min-height:44px;padding:0 12px}
 .full{width:100%}
 .form{border:1px solid var(--acc);border-radius:4px;padding:14px;margin:8px 0;background:var(--s1)}
+.chk{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--txt);font-size:15px}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
@@ -136,11 +169,14 @@ nav button.on{color:#000;background:var(--txt);border-radius:10px;font-weight:60
 <main id="app"></main>
 <nav>
   <button data-act="tab" data-tab="hoy">Hoy</button>
+  <button data-act="tab" data-tab="calendario">Calendario</button>
+  <button data-act="tab" data-tab="fotos">Fotos</button>
   <button data-act="tab" data-tab="rutina">Rutina</button>
-  <button data-act="tab" data-tab="historial">Historial</button>
 </nav>
 <div id="toast" role="status" aria-live="polite"></div>
 <input id="importar-archivo" type="file" accept="application/json,.json" class="sr" tabindex="-1" aria-hidden="true">
+<input id="foto-camara" type="file" accept="image/*" capture="environment" class="sr" tabindex="-1" aria-hidden="true">
+<input id="foto-galeria" type="file" accept="image/*" class="sr" tabindex="-1" aria-hidden="true">
 <script>
 const $ = s => document.querySelector(s);
 const app = $('#app');
@@ -151,18 +187,20 @@ const DIA_DE_HOY = ['dom','lun','mar','mie','jue','vie','dom'];
 const BLOQUES = [['calentamiento','Calentamiento'],['principal','Principal'],['estiramiento','Estiramiento']];
 const NOMBRE_BLOQUE = Object.fromEntries(BLOQUES);
 const LB_MANC = [3,5,10,15,20,25,30,35,40,45,50];
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 
-// tipo: 'reps' | 'tiempo' | 'lista' (calentamiento/estiramiento: se marcan)
+// tipo: 'reps' | 'tiempo' | 'lista'
 // equipo: 'mancuerna' (lb, de la lista) | 'disco' (kg, por paso) | 'libre' (unidad y paso libres)
-// series: número FIJO. Al completarlo, el ejercicio se marca como hecho y pasa al siguiente.
-const ej = o => ({bloque:'principal', tipo:'reps', equipo:'libre', unidad:'kg', paso:1, series:3, objetivo:'10', ss:'', indicacion:'', ...o});
+// series: número fijo. porLado: cada serie se registra una vez por lado (izquierda y derecha).
+// pesoObj: peso objetivo; la primera serie del ejercicio se precarga con él (null = sin objetivo).
+const ej = o => ({bloque:'principal', tipo:'reps', equipo:'libre', unidad:'kg', paso:1, series:3, objetivo:'10', ss:'', indicacion:'', pesoObj:null, porLado:false, ...o});
 
 const SEED = {
   dom:{titulo:'Lower 1', ejercicios:[
-    ej({id:'d1', nombre:'Sentadilla copa', equipo:'mancuerna', unidad:'lb', series:3, objetivo:'10', indicacion:'Mancuerna de 45 lb'}),
-    ej({id:'d2', nombre:'RDL con mancuernas', equipo:'mancuerna', unidad:'lb', series:3, objetivo:'10', indicacion:'Rango completo'}),
-    ej({id:'d3', nombre:'Step-down', series:3, objetivo:'10 por pierna', indicacion:'Sin peso'}),
-    ej({id:'d4', nombre:'Copenhagen plank', tipo:'tiempo', unidad:'', paso:5, series:3, objetivo:'20', indicacion:'Por lado'})
+    ej({id:'d1', nombre:'Sentadilla copa', equipo:'mancuerna', unidad:'lb', series:3, objetivo:'10', pesoObj:45, indicacion:'Mancuerna de 45 lb'}),
+    ej({id:'d2', nombre:'RDL con mancuernas', equipo:'mancuerna', unidad:'lb', series:3, objetivo:'10', pesoObj:35, indicacion:'Rango completo'}),
+    ej({id:'d3', nombre:'Step-down', series:3, objetivo:'10', porLado:true, indicacion:'Sin peso'}),
+    ej({id:'d4', nombre:'Copenhagen plank', tipo:'tiempo', unidad:'', paso:5, series:3, objetivo:'20', porLado:true})
   ]},
   lun:{titulo:'Upper 1', ejercicios:[
     {id:'c1', nombre:'Bici estática', bloque:'calentamiento', tipo:'lista', objetivo:'3-5 min', indicacion:'Ritmo suave, que suba la temperatura'},
@@ -173,16 +211,16 @@ const SEED = {
     {id:'c6', nombre:'Rotación externa con cable (codo al costado)', bloque:'calentamiento', tipo:'lista', objetivo:'2 × 15', indicacion:'Peso muy ligero, activa el manguito'},
     {id:'c7', nombre:'Aproximación press declinado 50%', bloque:'calentamiento', tipo:'lista', objetivo:'1 serie × 10-12', indicacion:'~50% del peso de trabajo'},
     {id:'c8', nombre:'Aproximación press declinado 70%', bloque:'calentamiento', tipo:'lista', objetivo:'1 serie × 5-6', indicacion:'~70% del peso de trabajo'},
-    ej({id:'u1', nombre:'Press declinado con mancuernas', equipo:'mancuerna', unidad:'lb', series:3, objetivo:'8-10', indicacion:'30 lb c/u · pausa 1-2 s abajo · bajada de 3 s · RIR 1-2'}),
-    ej({id:'u2', nombre:'Remo unilateral en máquina (agarre neutro)', series:3, objetivo:'8-10', unidad:'kg', paso:1, indicacion:'17-18 kg por lado · RIR 1-2'}),
-    ej({id:'u3', nombre:'Fly declinado', series:2, objetivo:'12-15', unidad:'lb', paso:2.5, indicacion:'17.5 lb · RIR 1-2'}),
-    ej({id:'u4', nombre:'Face pull (ligero)', series:3, objetivo:'15', unidad:'barras', paso:1, indicacion:'4 barras · RIR 2'}),
+    ej({id:'u1', nombre:'Press declinado con mancuernas', equipo:'mancuerna', unidad:'lb', series:3, objetivo:'8-10', pesoObj:30, indicacion:'30 lb c/u · pausa 1-2 s abajo · bajada de 3 s · RIR 1-2'}),
+    ej({id:'u2', nombre:'Remo unilateral en máquina (agarre neutro)', series:3, objetivo:'8-10', unidad:'kg', paso:1, pesoObj:17.5, indicacion:'17-18 kg por lado · RIR 1-2'}),
+    ej({id:'u3', nombre:'Fly declinado', series:2, objetivo:'12-15', unidad:'lb', paso:2.5, pesoObj:17.5, indicacion:'17.5 lb · RIR 1-2'}),
+    ej({id:'u4', nombre:'Face pull (ligero)', series:3, objetivo:'15', unidad:'barras', paso:1, pesoObj:4, indicacion:'4 barras · RIR 2'}),
     ej({id:'u5', nombre:'Extensión de tríceps en cable con cuerda', series:2, objetivo:'10-12', unidad:'barras', paso:1, indicacion:'Calibra · RIR 1-2'}),
-    ej({id:'u6', nombre:'Curl predicador', series:2, objetivo:'12', unidad:'barras', paso:1, indicacion:'3 barras · RIR 1'}),
-    ej({id:'u7', nombre:'Curl de muñeca invertido (palma abajo)', series:2, objetivo:'15-20', unidad:'lb', paso:2.5, indicacion:'10-12.5 lb · RIR 1'}),
-    ej({id:'u8', nombre:'Dead bug', series:3, objetivo:'10 por lado', indicacion:'Peso corporal'}),
-    ej({id:'u9', nombre:'Bird dog', series:3, objetivo:'10 por lado', indicacion:'Peso corporal'}),
-    ej({id:'u10', nombre:'Suitcase carry', equipo:'mancuerna', unidad:'lb', series:3, objetivo:'20-30 m por lado', indicacion:'30 lb o más'}),
+    ej({id:'u6', nombre:'Curl predicador', series:2, objetivo:'12', unidad:'barras', paso:1, pesoObj:3, indicacion:'3 barras · RIR 1'}),
+    ej({id:'u7', nombre:'Curl de muñeca invertido (palma abajo)', series:2, objetivo:'15-20', unidad:'lb', paso:2.5, pesoObj:10, indicacion:'10-12.5 lb · RIR 1'}),
+    ej({id:'u8', nombre:'Dead bug', series:3, objetivo:'10', porLado:true, indicacion:'Peso corporal'}),
+    ej({id:'u9', nombre:'Bird dog', series:3, objetivo:'10', porLado:true, indicacion:'Peso corporal'}),
+    ej({id:'u10', nombre:'Suitcase carry', equipo:'mancuerna', unidad:'lb', series:3, objetivo:'20-30 m', porLado:true, pesoObj:30, indicacion:'30 lb o más'}),
     ej({id:'u11', nombre:'Elevación lateral', equipo:'mancuerna', unidad:'lb', series:4, objetivo:'10', indicacion:'Peso ligero por molestia de hombro'}),
     {id:'s1', nombre:'Pecho en marco de puerta o pared', bloque:'estiramiento', tipo:'lista', objetivo:'2 × 30 s por lado', indicacion:'Codo a 90° o más bajo'},
     {id:'s2', nombre:'Brazo cruzado al pecho', bloque:'estiramiento', tipo:'lista', objetivo:'2 × 30 s por brazo', indicacion:'Deltoide posterior'},
@@ -197,30 +235,39 @@ const SEED = {
   vie:{titulo:'Upper 2', ejercicios:[]}
 };
 
-// ---------- carga segura y normalización ----------
-function cargarDatos(){
-  let raw = null;
-  try { raw = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { raw = null; }
-  return normalizar(raw) || {rutina: structuredClone(SEED), sesiones: []};
-}
-// Acepta datos guardados o importados; completa lo que falte para que la app nunca se rompa.
+// ---------- carga segura y normalización (compatible con datos de versiones anteriores) ----------
 function normalizar(d){
   if(!d || typeof d !== 'object' || !d.rutina || !Array.isArray(d.sesiones)) return null;
   for(const [k] of DIAS){
     if(!d.rutina[k]) d.rutina[k] = {titulo: NOMBRE_DIA[k], ejercicios: []};
     d.rutina[k].titulo = String(d.rutina[k].titulo || NOMBRE_DIA[k]);
     d.rutina[k].ejercicios = Array.isArray(d.rutina[k].ejercicios) ? d.rutina[k].ejercicios : [];
+    for(const e of d.rutina[k].ejercicios){
+      e.pesoObj = typeof e.pesoObj === 'number' ? e.pesoObj : null;
+      e.porLado = !!e.porLado;
+      e.series = Math.max(1, parseInt(e.series) || 1);
+      e.bloque = e.bloque || 'principal';
+    }
   }
   d.sesiones = d.sesiones.filter(s => s && s.fecha && s.dia && Array.isArray(s.series)).map(s => ({
-    dolor:{rodilla:0, hombro:0}, nota:'', checks:{}, notas:{}, ...s,
+    dolor:{rodilla:0, hombro:0}, nota:'', checks:{}, notas:{}, cerrada:false, ...s,
   }));
   return d;
 }
-
+function cargarDatos(){
+  let raw = null;
+  try { raw = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { raw = null; }
+  return normalizar(raw) || {rutina: structuredClone(SEED), sesiones: []};
+}
 let db = cargarDatos();
+
 // ui.abierto: undefined = automático (primer pendiente), null = ninguno, id = ese ejercicio
-// ui.editSid: serie que se está corrigiendo, { ej, sid } o null
-const ui = {tab:'hoy', dia: DIA_DE_HOY[new Date().getDay()], abierto: undefined, editando:null, editSid:null, cur:{}, scrollTo:null};
+const hoyDate = new Date();
+const ui = {
+  tab:'hoy', dia: DIA_DE_HOY[hoyDate.getDay()], abierto: undefined, editando:null, editSid:null,
+  cur:{}, scrollTo:null, hint:{}, mes:{y:hoyDate.getFullYear(), m:hoyDate.getMonth()}, diaCal:null,
+  busqueda:'', fotos:[]
+};
 
 function guardar(){
   try { localStorage.setItem(KEY, JSON.stringify(db)); return true; }
@@ -229,18 +276,24 @@ function guardar(){
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 const redondear = n => Math.round(n*100)/100;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fechaHoy = () => { const d = new Date(); return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-'); };
+const fechaDe = d => [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-');
+const fechaHoy = () => fechaDe(new Date());
+const parseFecha = f => { const [y,m,d] = f.split('-').map(Number); return new Date(y, m-1, d); };
+const diaDeFecha = f => DIA_DE_HOY[parseFecha(f).getDay()];
 const numObj = ex => parseInt(ex.objetivo) || 10;
+const topeReps = ex => Math.max(0, ...(String(ex.objetivo).match(/\d+/g) || [0]).map(Number));
+const totalSeries = ex => ex.series * (ex.porLado ? 2 : 1);
 
 const sesionHoy = () => db.sesiones.find(s => s.fecha === fechaHoy() && s.dia === ui.dia) || null;
 function sesionHoyOCrear(){
   let s = sesionHoy();
-  if(!s){ s = {id:uid(), fecha:fechaHoy(), dia:ui.dia, dolor:{rodilla:0,hombro:0}, nota:'', series:[], checks:{}, notas:{}}; db.sesiones.push(s); }
+  if(!s){ s = {id:uid(), fecha:fechaHoy(), dia:ui.dia, dolor:{rodilla:0,hombro:0}, nota:'', series:[], checks:{}, notas:{}, cerrada:false}; db.sesiones.push(s); }
   return s;
 }
 const seriesDe = (s, id) => s ? s.series.filter(x => x.ej === id) : [];
 const hechas = (ses, ex) => seriesDe(ses, ex.id).length;
-const esHecho = (ses, ex) => ex.tipo === 'lista' ? !!ses?.checks?.[ex.id] : hechas(ses, ex) >= ex.series;
+const esHecho = (ses, ex) => ex.tipo === 'lista' ? !!ses?.checks?.[ex.id] : hechas(ses, ex) >= totalSeries(ex);
+const ladoDe = (ex, indice) => ex.porLado ? (indice % 2 === 0 ? 'izquierda' : 'derecha') : '';
 function ultimaVez(id){
   const hoy = fechaHoy();
   for(const s of [...db.sesiones].reverse()){
@@ -251,22 +304,20 @@ function ultimaVez(id){
   return [];
 }
 const fmt = x => {
-  if(x.tipo === 'tiempo') return `${x.seg} s`;
-  if(x.unidad && x.peso > 0) return `${x.peso} ${x.unidad} × ${x.reps}`;
-  return `${x.reps} reps`;
+  const lado = x.lado ? ` (${x.lado})` : '';
+  if(x.tipo === 'tiempo') return `${x.seg} s${lado}`;
+  if(x.unidad && x.peso > 0) return `${x.peso} ${x.unidad} × ${x.reps}${lado}`;
+  return `${x.reps} reps${lado}`;
 };
 const buscarEj = id => db.rutina[ui.dia].ejercicios.find(e => e.id === id);
 const principales = () => db.rutina[ui.dia].ejercicios.filter(e => (e.bloque||'principal')==='principal' && e.tipo!=='lista');
 const hayContenido = s => s.series.length || Object.values(s.checks||{}).some(Boolean) || s.nota || Object.values(s.notas||{}).some(Boolean);
+const rirTxt = x => x.rir == null ? 'RIR ?' : `RIR ${x.rir}`;
 
-// Valor base: la primera serie usa la última vez; cada serie siguiente usa la anterior registrada.
-function cur(ex){
-  if(!ui.cur[ex.id]){
-    const ult = seriesDe(sesionHoy(), ex.id).at(-1) || ultimaVez(ex.id).at(-1);
-    ui.cur[ex.id] = ult ? {peso:ult.peso, reps:ult.reps, seg:ult.seg, rir:ult.rir}
-                        : {peso:0, reps:numObj(ex), seg:numObj(ex), rir:2};
-  }
-  return ui.cur[ex.id];
+// Peso siguiente según equipo
+function siguientePeso(ex, val){
+  if(ex.equipo === 'mancuerna') return LB_MANC.find(v => v > val) ?? val;
+  return redondear(val + ex.paso);
 }
 function ajustarPeso(ex, val, sg){
   if(ex.equipo === 'mancuerna'){
@@ -275,6 +326,39 @@ function ajustarPeso(ex, val, sg){
   }
   return Math.max(0, redondear(val + sg * ex.paso));
 }
+
+// Valores base de la serie:
+// - primera serie de la sesión: peso = peso objetivo (o la última vez si no hay objetivo); reps = última vez u objetivo
+// - siguientes series: valores de la última serie registrada
+function cur(ex){
+  if(!ui.cur[ex.id]){
+    const lastHoy = seriesDe(sesionHoy(), ex.id).at(-1);
+    const ult = ultimaVez(ex.id).at(-1);
+    const proxima = lastHoy ? null : sugerenciaProxima(ex);
+    const peso = lastHoy ? lastHoy.peso : (proxima != null ? proxima : (ex.pesoObj != null ? ex.pesoObj : (ult ? ult.peso : 0)));
+    const reps = lastHoy ? lastHoy.reps : (ult ? ult.reps : numObj(ex));
+    const seg = lastHoy ? lastHoy.seg : (ult ? ult.seg : numObj(ex));
+    ui.cur[ex.id] = {peso, reps, seg, rir:null};
+  }
+  return ui.cur[ex.id];
+}
+
+// Regla de progresión:
+// - En la sesión: si las últimas 2 series alcanzaron el tope de reps con RIR 3 o más, sube el peso para la siguiente.
+// - Próxima sesión: si todas las series de la última vez alcanzaron el tope con RIR 3 o más, se sugiere subir.
+const cumpleTope = (ex, x) => x.reps >= topeReps(ex) && x.rir != null && x.rir >= 3;
+function sugerenciaSesion(ex, ses){
+  const s = seriesDe(ses, ex.id);
+  if(s.length < 2 || s.length >= totalSeries(ex)) return null;
+  const ultimas = s.slice(-2);
+  return ultimas.every(x => cumpleTope(ex, x)) ? 'en-sesion' : null;
+}
+function sugerenciaProxima(ex){
+  const ult = ultimaVez(ex.id);
+  if(!ult.length || ult.length < totalSeries(ex)) return null;
+  return ult.every(x => cumpleTope(ex, x)) ? siguientePeso(ex, ult.at(-1).peso) : null;
+}
+
 function idAbierto(ses){
   if(ui.abierto !== undefined) return ui.abierto;
   return principales().find(e => !esHecho(ses, e))?.id ?? null;
@@ -286,7 +370,7 @@ function siguientePendiente(ses, desdeId){
   return orden.find(e => !esHecho(ses, e))?.id ?? null;
 }
 
-// ---------- vistas ----------
+// ---------- vistas: Hoy ----------
 const chipsDias = () => `<div class="chips" role="tablist">${DIAS.map(([k,n]) =>
   `<button role="tab" aria-selected="${ui.dia===k}" class="${ui.dia===k?'on':''}" data-act="dia" data-dia="${k}">${n.slice(0,3)}</button>`).join('')}</div>`;
 
@@ -298,12 +382,12 @@ function tarjetaLista(ex, ses){
 }
 
 function tarjeta(ex, ses, abierto){
-  const n = hechas(ses, ex), hecho = n >= ex.series, t = ex.tipo === 'tiempo';
+  const n = hechas(ses, ex), total = totalSeries(ex), hecho = n >= total, t = ex.tipo === 'tiempo';
   const editando = ui.editSid && ui.editSid.ej === ex.id;
   const c = cur(ex);
   const ult = ultimaVez(ex.id);
   const estado = hecho ? 'hecho' : (abierto ? 'activo' : '');
-  const dots = `<span class="dots" aria-label="${n} de ${ex.series} series">${Array.from({length:ex.series},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</span>`;
+  const dots = `<span class="dots" aria-label="${n} de ${total} series">${Array.from({length:total},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</span>`;
   const stepper = (f, label, val) => `<div class="stepper">
       <button data-act="ajustar" data-f="${f}" data-sg="-1" data-id="${ex.id}" aria-label="Bajar ${label}">−</button>
       <div class="c"><input class="v" type="number" inputmode="decimal" value="${val}" data-set="${f}" data-id="${ex.id}" aria-label="${label}">
@@ -312,47 +396,56 @@ function tarjeta(ex, ses, abierto){
   const pesoLabel = ex.equipo === 'mancuerna' ? 'Mancuerna lb c/u' : ex.equipo === 'disco' ? `Discos kg · paso ${ex.paso}` : `Peso ${ex.unidad || ''} · paso ${ex.paso}`;
   const sets = seriesDe(ses, ex.id);
   const setsHTML = sets.length ? `<div class="ej-sets">${sets.map((x,i) => {
-      const cur = ui.editSid && ui.editSid.sid === x.sid;
-      return `<span class="chip-s"><button class="${cur?'cur':''}" data-act="editarSerie" data-sid="${x.sid}" data-id="${ex.id}" aria-label="Corregir serie ${i+1}">#${i+1} ${esc(fmt(x))} · RIR ${x.rir}</button><button class="del" data-act="borrar" data-sid="${x.sid}" aria-label="Borrar serie ${i+1}">✕</button></span>`;
+      const activa = ui.editSid && ui.editSid.sid === x.sid;
+      return `<span class="chip-s"><button class="${activa?'cur':''}" data-act="editarSerie" data-sid="${x.sid}" data-id="${ex.id}" aria-label="Corregir serie ${i+1}">#${i+1} ${esc(fmt(x))} · ${rirTxt(x)}</button><button class="del" data-act="borrar" data-sid="${x.sid}" aria-label="Borrar serie ${i+1}">✕</button></span>`;
     }).join('')}</div>` : '';
-  const puedeRegistrar = !hecho || editando;
-  const cuerpo = puedeRegistrar ? `
+  const siguienteLado = ladoDe(ex, n);
+  const numSerie = editando ? '' : `Serie ${Math.min(n+1,total)} de ${total}${siguienteLado ? ' · ' + siguienteLado : ''}`;
+  const sugerida = sugerenciaSesion(ex, ses) && !editando ? `<div class="sugerencia">Las últimas 2 series llegaron al tope con RIR alto. Subí a <b>${esc(ajustarPesoTxt(ex, c.peso))}</b> para la siguiente.</div>` : '';
+  const proxima = sugerenciaProxima(ex);
+  const pesoAviso = proxima != null && !hecho && n === 0 ? `<div class="sugerencia">Última vez llegaste al tope con RIR alto. Esta vez prueba <b>${proxima} ${esc(ex.unidad)}</b>.</div>` : '';
+  const cuerpo = !hecho || editando ? `
     ${t ? stepper('seg', `Segundos · paso ${ex.paso}`, c.seg)
         : stepper('peso', pesoLabel, c.peso) + stepper('reps', 'Reps', c.reps)}
-    <div class="rir-l">RIR · reps que te quedaban</div>
+    <div class="rir-l">RIR · reps que te quedaban (obligatorio)</div>
     <div class="rir" role="radiogroup" aria-label="RIR">${[0,1,2,3,4].map(v => `<button role="radio" aria-checked="${c.rir===v}" class="${c.rir===v?'on':''}" data-act="rir" data-v="${v}" data-id="${ex.id}">${v}</button>`).join('')}</div>
     ${editando
       ? `<div class="edit-bar"><span>Corrigiendo serie</span><button class="sec" data-act="cancelarSerie">Cancelar</button></div>
-         <button class="pri full" data-act="guardar" data-id="${ex.id}" style="margin-top:8px">Actualizar serie</button>`
-      : `<button class="pri full" data-act="guardar" data-id="${ex.id}">Guardar serie ${n+1} de ${ex.series}</button>`}`
-    : `<p class="meta" style="margin-top:12px">Completado: ${n} de ${ex.series}. Toca una serie para corregirla.</p>`;
+         <button class="pri full" data-act="guardar" data-id="${ex.id}" ${c.rir==null?'disabled':''} style="margin-top:8px">${c.rir==null ? 'Elige el RIR' : 'Actualizar serie'}</button>`
+      : `<button class="pri full" data-act="guardar" data-id="${ex.id}" ${c.rir==null?'disabled':''}>${c.rir==null ? 'Elige el RIR para guardar' : `Guardar ${numSerie.toLowerCase()}`}</button>`}`
+    : `<p class="meta" style="margin-top:12px">Completado: ${n} de ${total}. Toca una serie para corregirla.</p>`;
   const panel = abierto || editando ? `<div class="ex-p">
     <p class="hist">Última vez: <b>${ult.length ? esc(ult.map(fmt).join(', ')) : 'sin registro'}</b></p>
     ${ex.indicacion ? `<p class="hist">${esc(ex.indicacion)}</p>` : ''}
+    ${!hecho && !editando ? `<p class="serie-l">${numSerie}</p>` : ''}
+    ${sugerida}${!sugerida ? pesoAviso : ''}
     ${setsHTML}
     ${cuerpo}
     <textarea class="nota-ej" data-nota-ej="${ex.id}" placeholder="Nota de este ejercicio" aria-label="Nota de ${esc(ex.nombre)}">${esc(ses?.notas?.[ex.id] || '')}</textarea>
+    <div class="acciones"><button class="sec full" data-act="preguntar" data-id="${ex.id}">Preguntar a Claude sobre este ejercicio</button></div>
   </div>` : '';
   return `<article class="ex ${estado}" id="ex-${ex.id}">
     <div class="ex-h" data-act="abrir" data-id="${ex.id}" role="button" tabindex="0" aria-expanded="${abierto}">
       ${hecho ? '<span class="ok" aria-hidden="true">✓</span>' : ''}
       <div class="t"><h3>${esc(ex.nombre)}</h3>
-        <div class="sub">${ex.series} × ${esc(ex.objetivo)}${t?' s':' reps'}${n && !hecho ? ` · faltan ${ex.series-n}` : ''}</div></div>
+        <div class="sub">${ex.series} × ${esc(ex.objetivo)}${t?' s':' reps'}${ex.porLado ? ' por lado' : ''}${n && !hecho ? ` · faltan ${total-n}` : ''}</div></div>
       ${dots}
     </div>
     ${panel}
   </article>`;
 }
+function ajustarPesoTxt(ex, val){ const nv = siguientePeso(ex, val); return `${nv} ${ex.unidad}`.trim(); }
 
 function vistaHoy(){
   const d = db.rutina[ui.dia], ses = sesionHoy();
   const dolor = ses ? ses.dolor : {rodilla:0, hombro:0};
   const abierto = idAbierto(ses);
   const prin = principales();
-  const totalS = prin.reduce((a,e) => a + e.series, 0);
-  const hechasS = prin.reduce((a,e) => a + Math.min(hechas(ses,e), e.series), 0);
+  const totalS = prin.reduce((a,e) => a + totalSeries(e), 0);
+  const hechasS = prin.reduce((a,e) => a + Math.min(hechas(ses,e), totalSeries(e)), 0);
   const pct = totalS ? Math.round(hechasS/totalS*100) : 0;
   const completos = prin.filter(e => esHecho(ses,e)).length;
+  const cerrada = !!ses?.cerrada;
 
   let html = chipsDias() + `<div class="dia"><h1>${esc(d.titulo)}</h1>
     <div class="resumen tnum">${completos}/${prin.length} ejercicios</div></div>
@@ -378,19 +471,25 @@ function vistaHoy(){
     html += `</section>`;
   }
 
-  html += `<div class="panel-cierre">
+  html += `<div class="panel">
     ${[['rodilla','Dolor de rodilla'],['hombro','Dolor de hombro']].map(([k,l]) =>
       `<label for="d-${k}">${l}: <b class="tnum" data-out="${k}">${dolor[k]}</b> / 10</label>
        <input id="d-${k}" type="range" min="0" max="10" step="1" value="${dolor[k]}" data-dolor="${k}">`).join('')}
     <label for="nota-sesion">Nota de la sesión</label>
     <textarea id="nota-sesion" data-nota placeholder="¿Cómo se sintió hoy?" style="font-size:16px">${esc(ses ? ses.nota : '')}</textarea>
-    <div class="acciones"><button class="pri full" data-act="copiar">Copiar resumen de hoy</button></div>
+    <div class="acciones">
+      ${cerrada
+        ? `<div class="cerrada"><span>Sesión terminada</span><button class="sec" data-act="reabrir">Reabrir</button></div>`
+        : (ses && ses.series.length ? `<button data-act="terminar">Terminar sesión</button>` : '')}
+      <button class="pri full" data-act="copiar">Copiar resumen de hoy</button>
+    </div>
   </div>`;
   return html;
 }
 
+// ---------- vistas: Rutina ----------
 function formEj(e){
-  e = e || {id:'nuevo', nombre:'', bloque:'principal', tipo:'reps', equipo:'libre', unidad:'kg', paso:1, series:3, objetivo:'10', ss:'', indicacion:''};
+  e = e || {id:'nuevo', nombre:'', bloque:'principal', tipo:'reps', equipo:'libre', unidad:'kg', paso:1, series:3, objetivo:'10', ss:'', indicacion:'', pesoObj:null, porLado:false};
   const sel = (name, opts, val) => `<select name="${name}">${opts.map(([v,l]) =>
     `<option value="${v}" ${v===val?'selected':''}>${l}</option>`).join('')}</select>`;
   return `<form class="form" data-form="${e.id}">
@@ -401,10 +500,12 @@ function formEj(e){
       <div><label>Equipo</label>${sel('equipo',[['mancuerna','Mancuernas (lb)'],['disco','Discos (kg)'],['libre','Otro / sin peso']], e.equipo)}</div>
       <div><label for="f-unidad">Unidad (si es "Otro")</label><input id="f-unidad" name="unidad" value="${esc(e.unidad)}" placeholder="kg, lb, barras"></div>
       <div><label for="f-paso">Paso</label><input id="f-paso" name="paso" type="number" step="0.5" min="0.5" value="${e.paso}"></div>
-      <div><label for="f-series">Series fijas</label><input id="f-series" name="series" type="number" min="1" value="${e.series}"></div>
+      <div><label for="f-pobj">Peso objetivo (vacío = ninguno)</label><input id="f-pobj" name="pesoObj" type="number" step="0.5" min="0" value="${e.pesoObj ?? ''}"></div>
+      <div><label for="f-series">Series</label><input id="f-series" name="series" type="number" min="1" value="${e.series}"></div>
       <div><label for="f-obj">Objetivo (reps, seg o texto)</label><input id="f-obj" name="objetivo" value="${esc(e.objetivo)}"></div>
       <div><label for="f-ss">Superserie (letra)</label><input id="f-ss" name="ss" maxlength="2" value="${esc(e.ss)}" placeholder="vacío = ninguna"></div>
     </div>
+    <label class="chk"><input type="checkbox" name="porLado" ${e.porLado?'checked':''}> Se hace por lado (cada serie se registra izquierda y derecha)</label>
     <label for="f-ind">Indicaciones</label><textarea id="f-ind" name="indicacion" placeholder="Pausa, tempo, RIR, peso sugerido…">${esc(e.indicacion)}</textarea>
     <div class="btns" style="margin-top:12px">
       <button class="pri" type="submit" style="flex:1">Guardar</button>
@@ -416,9 +517,9 @@ function formEj(e){
 
 function infoEj(e){
   if(e.tipo === 'lista') return `${NOMBRE_BLOQUE[e.bloque]} · ${esc(e.objetivo)}`;
-  const obj = `${e.series} series × ${esc(e.objetivo)}${e.tipo==='tiempo' ? ' s' : ' reps'}`;
+  const obj = `${e.series} series × ${esc(e.objetivo)}${e.tipo==='tiempo' ? ' s' : ' reps'}${e.porLado ? ' por lado' : ''}`;
   const peso = e.tipo === 'tiempo' ? 'tiempo'
-    : e.equipo === 'mancuerna' ? 'mancuernas lb'
+    : e.equipo === 'mancuerna' ? `mancuernas lb${e.pesoObj != null ? ', objetivo ' + e.pesoObj : ''}`
     : e.equipo === 'disco' ? `discos kg, paso ${e.paso}`
     : (e.unidad ? `${e.unidad}, paso ${e.paso}` : 'sin peso');
   return `${obj} · ${peso}${e.ss ? ' · superserie ' + esc(e.ss) : ''}`;
@@ -443,39 +544,152 @@ function vistaRutina(){
   return html;
 }
 
-function vistaHist(){
-  const lista = [...db.sesiones].filter(hayContenido).reverse();
-  let html = `<div class="dia"><h1>Historial</h1></div>`;
-  if(!lista.length) html += `<p class="meta">Aún no hay sesiones con registros.</p>`;
-  html += lista.map(s => `<div class="card">
-      <div class="row"><b style="font-weight:600">${s.fecha} · ${NOMBRE_DIA[s.dia] || s.dia}</b><span class="meta tnum">${s.series.length} series</span></div>
-      <div class="meta tnum">Dolor rodilla ${s.dolor.rodilla} · hombro ${s.dolor.hombro}</div>
-      <div class="btns" style="margin-top:8px"><button data-act="copiar" data-id="${s.id}">Copiar resumen</button></div>
-    </div>`).join('');
-  html += `<div class="panel-cierre">
-    <p class="meta" style="margin:0 0 10px">Tus datos viven solo en este celular. Exporta un respaldo de vez en cuando.</p>
-    <div class="acciones" style="margin-top:0">
+// ---------- vistas: Calendario ----------
+function estadoDia(fecha){
+  const hoy = fechaHoy();
+  const dia = diaDeFecha(fecha);
+  const plan = db.rutina[dia].ejercicios.some(e => e.tipo !== 'lista');
+  const sesiones = db.sesiones.filter(s => s.fecha === fecha);
+  const sets = sesiones.reduce((a,s) => a + s.series.length, 0);
+  const cerrada = sesiones.some(s => s.cerrada);
+  const planTotal = db.rutina[dia].ejercicios.filter(e => e.tipo !== 'lista' && (e.bloque||'principal')==='principal').reduce((a,e) => a + totalSeries(e), 0);
+  if(cerrada || (sets && planTotal && sets >= planTotal)) return 'hecha';
+  if(sets) return 'parcial';
+  if(plan && fecha < hoy) return 'falta';
+  if(plan) return 'plan';
+  return '';
+}
+function vistaCalendario(){
+  const {y, m} = ui.mes;
+  const primero = new Date(y, m, 1), ultimo = new Date(y, m+1, 0).getDate();
+  const offset = (primero.getDay() + 6) % 7;
+  const hoy = fechaHoy();
+  // Estadísticas del mes hasta hoy
+  let programadas = 0, completas = 0, parciales = 0;
+  for(let d = 1; d <= ultimo; d++){
+    const f = fechaDe(new Date(y, m, d));
+    if(f > hoy) break;
+    const dia = diaDeFecha(f);
+    if(db.rutina[dia].ejercicios.some(e => e.tipo !== 'lista')) programadas++;
+    const e = estadoDia(f);
+    if(e === 'hecha') completas++; else if(e === 'parcial') parciales++;
+  }
+  const porcentaje = programadas ? Math.round(completas/programadas*100) : 0;
+
+  let cells = '';
+  for(let i = 0; i < offset; i++) cells += `<span class="dcell fuera" aria-hidden="true"></span>`;
+  for(let d = 1; d <= ultimo; d++){
+    const f = fechaDe(new Date(y, m, d));
+    const est = estadoDia(f);
+    const clases = ['dcell', est, f === hoy ? 'hoy' : '', ui.diaCal === f ? 'sel' : ''].join(' ').replace(/\s+/g,' ').trim();
+    cells += `<button class="${clases}" data-act="diaCal" data-f="${f}" aria-label="${d} de ${MESES[m]}${est ? ', ' + est : ''}">${d}</button>`;
+  }
+
+  let html = `<div class="dia"><h1>Calendario</h1></div>
+    <div class="mes">
+      <button class="sec" data-act="mes" data-d="-1" aria-label="Mes anterior">‹</button>
+      <h2>${MESES[m]} ${y}</h2>
+      <button class="sec" data-act="mes" data-d="1" aria-label="Mes siguiente">›</button>
+    </div>
+    <div class="stats">
+      <div><b>${completas}</b><span>completas de ${programadas}</span></div>
+      <div><b>${porcentaje}%</b><span>consistencia</span></div>
+      <div><b>${parciales}</b><span>parciales</span></div>
+    </div>
+    <div class="grid-cal">
+      ${['L','M','M','J','V','S','D'].map(l => `<span class="dn" aria-hidden="true">${l}</span>`).join('')}
+      ${cells}
+    </div>
+    <div class="leyenda">
+      <span><i style="background:var(--acc);border-color:var(--acc)"></i>Completa</span>
+      <span><i style="border-color:var(--acc)"></i>Parcial</span>
+      <span><i></i>Programada</span>
+      <span><i style="text-decoration:line-through">x</i>Faltó</span>
+    </div>`;
+
+  if(ui.diaCal){
+    const sesiones = db.sesiones.filter(s => s.fecha === ui.diaCal && hayContenido(s));
+    html += `<div class="panel"><h2 style="margin:0 0 8px;font:700 22px var(--display)">${ui.diaCal}</h2>`;
+    if(!sesiones.length) html += `<p class="meta">Sin registros este día.</p>`;
+    html += sesiones.map(s => {
+      const d = db.rutina[s.dia] || {ejercicios:[]};
+      const ids = [...new Set(s.series.map(x => x.ej))];
+      const lineas = ids.map(id => {
+        const ss = seriesDe(s, id), e = d.ejercicios.find(x => x.id === id);
+        return `<div class="meta">• ${esc(ss[0].nombre)}: ${esc(ss.map(x => `${fmt(x)} ${rirTxt(x)}`).join(', '))}${e && ss.length < totalSeries(e) ? ` (${ss.length}/${totalSeries(e)})` : ''}</div>`;
+      }).join('');
+      return `<div class="card"><div class="row"><b style="font-weight:600">${NOMBRE_DIA[s.dia] || s.dia}${s.cerrada ? ' · terminada' : ''}</b>
+        <button data-act="copiar" data-id="${s.id}">Copiar</button></div>${lineas}
+        <div class="meta tnum" style="margin-top:6px">Dolor rodilla ${s.dolor.rodilla} · hombro ${s.dolor.hombro}</div></div>`;
+    }).join('');
+    html += `</div>`;
+  }
+
+  const q = ui.busqueda.trim().toLowerCase();
+  html += `<div class="panel"><label for="buscar">Buscar un ejercicio en tu historial</label>
+    <input id="buscar" data-busqueda value="${esc(ui.busqueda)}" placeholder="Ej. sentadilla">`;
+  if(q){
+    const hits = [...db.sesiones].reverse().filter(s => s.series.some(x => x.nombre.toLowerCase().includes(q))).slice(0, 15);
+    html += hits.length ? hits.map(s => {
+      const xs = s.series.filter(x => x.nombre.toLowerCase().includes(q));
+      return `<div class="card"><div class="row"><b style="font-weight:600">${s.fecha} · ${NOMBRE_DIA[s.dia] || s.dia}</b></div>
+        <div class="meta">${esc(xs[0].nombre)}: ${esc(xs.map(x => `${fmt(x)} ${rirTxt(x)}`).join(', '))}</div></div>`;
+    }).join('') : `<p class="meta">Sin resultados.</p>`;
+  }
+  html += `<div class="acciones" style="margin-top:14px">
       <button class="full" data-act="exportar">Exportar respaldo (.json)</button>
       <button class="full" data-act="importar">Importar respaldo (reemplaza los datos)</button>
-    </div></div>`;
+    </div><p class="meta" style="margin-top:10px">Las fotos se guardan en el celular y no entran en el respaldo JSON.</p></div>`;
+  return html;
+}
+
+// ---------- vistas: Fotos ----------
+function lunesDe(fecha){
+  const d = parseFecha(fecha); const dow = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - dow); return fechaDe(d);
+}
+function etiquetaSemana(lunes){
+  const a = parseFecha(lunes), b = new Date(a); b.setDate(a.getDate() + 6);
+  const fmtC = d => `${d.getDate()} ${MESES[d.getMonth()].slice(0,3)}`;
+  return `Semana del ${fmtC(a)} al ${fmtC(b)}`;
+}
+function vistaFotos(){
+  const grupos = {};
+  for(const f of ui.fotos){ (grupos[lunesDe(f.fecha)] ||= []).push(f); }
+  const semanas = Object.keys(grupos).sort().reverse();
+  let html = `<div class="dia"><h1>Fotos</h1><div class="resumen">${ui.fotos.length} fotos</div></div>
+    <div class="acciones" style="margin-top:6px">
+      <button class="pri full" data-act="fotoCamara">Tomar foto de cierre de semana</button>
+      <button class="full" data-act="fotoGaleria">Subir desde la galería</button>
+    </div>
+    <p class="meta" style="margin-top:8px">Se guarda con la fecha de hoy. Fotos en tu celular, no en la nube.</p>`;
+  if(!semanas.length) html += `<p class="meta" style="margin-top:20px">Aún no tienes fotos.</p>`;
+  for(const l of semanas){
+    html += `<section class="semana"><h3>${etiquetaSemana(l)}</h3><div class="fotos-grid">
+      ${grupos[l].sort((a,b) => a.creada - b.creada).map(f => `<figure>
+        <button class="sec" data-act="verFoto" data-id="${f.id}" style="min-height:0;padding:0;border:0;display:block;width:100%" aria-label="Ver foto del ${f.fecha}"><img alt="Foto del ${f.fecha}" data-foto="${f.id}"></button>
+        <figcaption class="tnum">${f.fecha}</figcaption></figure>`).join('')}
+    </div></section>`;
+  }
   return html;
 }
 
 // ---------- resumen para pegar en otro chat ----------
 function resumen(s){
   const d = db.rutina[s.dia] || {titulo:'', ejercicios:[]};
-  const L = [`Entreno ${s.fecha} · ${NOMBRE_DIA[s.dia] || s.dia} (${d.titulo})`];
+  const L = [`Entreno ${s.fecha} · ${NOMBRE_DIA[s.dia] || s.dia} (${d.titulo})${s.cerrada ? ' · terminada' : ''}`];
   const ids = [...new Set(s.series.map(x => x.ej))];
-  for(const e of d.ejercicios.filter(e => e.tipo !== 'lista' && (e.bloque||'principal')==='principal')){
-    if(!ids.includes(e.id)) { L.push(`- ${e.nombre} (obj ${e.series} series × ${e.objetivo}): sin registro`); continue; }
-  }
   for(const id of ids){
     const ss = seriesDe(s, id), e = d.ejercicios.find(x => x.id === id);
-    const obj = e ? ` (obj ${e.series} series × ${e.objetivo}${e.tipo==='tiempo'?' s':''}${e.ss?', SS '+e.ss:''})` : '';
-    const estado = e && ss.length < e.series ? ` · incompleto ${ss.length}/${e.series}` : '';
-    L.push(`- ${ss[0].nombre}${obj}${estado}: ${ss.map(x => `${fmt(x)} RIR${x.rir}`).join(', ')}`);
+    const total = e ? totalSeries(e) : ss.length;
+    const obj = e ? ` (obj ${e.series} series${e.porLado ? ' por lado' : ''} × ${e.objetivo}${e.tipo==='tiempo'?' s':''}${e.ss?', SS '+e.ss:''})` : '';
+    const estado = e && ss.length < total ? ` · incompleto ${ss.length}/${total}` : '';
+    L.push(`- ${ss[0].nombre}${obj}${estado}: ${ss.map(x => `${fmt(x)} ${rirTxt(x)}`).join(', ')}`);
     const nota = s.notas?.[id];
     if(nota) L.push(`  Nota del ejercicio: ${nota}`);
+  }
+  for(const e of d.ejercicios.filter(e => e.tipo !== 'lista' && (e.bloque||'principal')==='principal' && !ids.includes(e.id))){
+    L.push(`- ${e.nombre} (obj ${e.series} series × ${e.objetivo}): sin registro`);
   }
   const listas = d.ejercicios.filter(e => e.tipo === 'lista');
   for(const [clave, etiqueta] of BLOQUES){
@@ -497,10 +711,27 @@ async function copiarTexto(txt){
     t.style.position = 'fixed'; t.style.opacity = '0';
     document.body.append(t); t.select(); document.execCommand('copy'); t.remove();
   }
-  toast('Resumen copiado');
+  toast('Copiado');
 }
 let toastT;
-function toast(m){ const el = $('#toast'); el.textContent = m; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), 2000); }
+function toast(m){ const el = $('#toast'); el.textContent = m; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), 2200); }
+
+// Contexto para preguntar a Claude: no usa una clave de API dentro del celular; copia el contexto y abre claude.ai.
+function prepararPregunta(ex){
+  const ses = sesionHoy(), ult = ultimaVez(ex.id);
+  const sets = seriesDe(ses, ex.id);
+  const L = [
+    `Ejercicio: ${ex.nombre}`,
+    `Plan: ${ex.series} series${ex.porLado ? ' por lado' : ''} × ${ex.objetivo}${ex.tipo==='tiempo'?' s':' reps'}`,
+    ex.indicacion ? `Indicaciones: ${ex.indicacion}` : '',
+    ult.length ? `Última vez: ${ult.map(fmt).join(', ')}` : '',
+    sets.length ? `Hoy: ${sets.map(x => `${fmt(x)} ${rirTxt(x)}`).join(', ')}` : 'Hoy: sin series todavía',
+    `Dolor hoy: rodilla ${ses?.dolor.rodilla ?? 0}/10, hombro ${ses?.dolor.hombro ?? 0}/10`,
+    '',
+    'Mi pregunta: '
+  ].filter(Boolean);
+  return L.join('\n');
+}
 
 // ---------- respaldo ----------
 function exportar(){
@@ -521,12 +752,75 @@ $('#importar-archivo').addEventListener('change', async e => {
   } catch { toast('El archivo no es un respaldo válido'); }
 });
 
+// ---------- fotos (IndexedDB: guarda las imágenes como archivos, no en localStorage) ----------
+let fotosDB = null;
+function abrirFotos(){
+  return fotosDB ||= new Promise((res, rej) => {
+    const r = indexedDB.open('gym-fotos', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('fotos', {keyPath:'id'});
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function fotosOp(modo, fn){
+  const db2 = await abrirFotos();
+  return new Promise((res, rej) => {
+    const tx = db2.transaction('fotos', modo), st = tx.objectStore('fotos');
+    const req = fn(st);
+    tx.oncomplete = () => res(req?.result);
+    tx.onerror = () => rej(tx.error);
+  });
+}
+const fotosTodas = () => fotosOp('readonly', st => st.getAll());
+const fotoGuardar = f => fotosOp('readwrite', st => st.put(f));
+const fotoBorrar = id => fotosOp('readwrite', st => st.delete(id));
+async function cargarFotos(){
+  try { ui.fotos = await fotosTodas(); }
+  catch { ui.fotos = []; toast('No se pudieron cargar las fotos'); }
+  render();
+}
+async function comprimir(file){
+  const img = await createImageBitmap(file);
+  const k = Math.min(1, 1280 / Math.max(img.width, img.height));
+  const c = document.createElement('canvas');
+  c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return new Promise(res => c.toBlob(res, 'image/jpeg', 0.8));
+}
+async function guardarFoto(file){
+  if(!file) return;
+  try {
+    const blob = await comprimir(file);
+    await fotoGuardar({id: uid(), fecha: fechaHoy(), creada: Date.now(), blob});
+    toast('Foto guardada');
+    await cargarFotos();
+  } catch { toast('No se pudo guardar la foto'); }
+}
+$('#foto-camara').addEventListener('change', e => { guardarFoto(e.target.files[0]); e.target.value = ''; });
+$('#foto-galeria').addEventListener('change', e => { guardarFoto(e.target.files[0]); e.target.value = ''; });
+
+// Muestra las imágenes después de render (los blobs no pueden ir en el HTML)
+ui.urls = {};
+function ponerImagenes(){
+  document.querySelectorAll('img[data-foto]').forEach(img => {
+    const id = img.dataset.foto;
+    if(!ui.urls[id]){
+      const f = ui.fotos.find(x => x.id === id);
+      if(f) ui.urls[id] = URL.createObjectURL(f.blob);
+    }
+    if(ui.urls[id]) img.src = ui.urls[id];
+  });
+}
+
 // ---------- eventos ----------
-document.addEventListener('click', e => {
+document.addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if(!b) return;
   const a = b.dataset.act, id = b.dataset.id;
   switch(a){
-    case 'tab': ui.tab = b.dataset.tab; ui.abierto = undefined; ui.editando = null; ui.editSid = null; break;
+    case 'tab':
+      ui.tab = b.dataset.tab; ui.abierto = undefined; ui.editando = null; ui.editSid = null;
+      if(ui.tab === 'fotos'){ cargarFotos(); return; }
+      break;
     case 'dia': ui.dia = b.dataset.dia; ui.abierto = undefined; ui.editando = null; ui.editSid = null; break;
     case 'abrir': {
       const actual = idAbierto(sesionHoy());
@@ -549,6 +843,7 @@ document.addEventListener('click', e => {
     case 'rir': cur(buscarEj(id)).rir = Number(b.dataset.v); break;
     case 'guardar': {
       const ex = buscarEj(id), c = cur(ex);
+      if(c.rir == null){ toast('Elige el RIR antes de guardar'); break; }
       // Corrección de una serie existente
       if(ui.editSid && ui.editSid.ej === ex.id){
         const s = sesionHoy(), serie = s?.series.find(x => x.sid === ui.editSid.sid);
@@ -558,15 +853,22 @@ document.addEventListener('click', e => {
       }
       const s = sesionHoyOCrear();
       if(esHecho(s, ex)) break;
-      s.series.push({sid:uid(), ej:ex.id, nombre:ex.nombre, tipo:ex.tipo, unidad:ex.unidad,
+      const indice = hechas(s, ex);
+      s.series.push({sid:uid(), ej:ex.id, nombre:ex.nombre, tipo:ex.tipo, unidad:ex.unidad, lado: ladoDe(ex, indice),
                      peso:c.peso, reps:c.reps, seg:c.seg, rir:c.rir});
       if(!guardar()) break;
+      // Tras guardar: la siguiente serie usa estos valores, y el RIR se vuelve a elegir
+      c.rir = null;
+      if(sugerenciaSesion(ex, s)){
+        c.peso = siguientePeso(ex, c.peso);
+        ui.hint[ex.id] = true;
+      }
       if(esHecho(s, ex)){
         const sig = siguientePendiente(s, ex.id);
         ui.abierto = sig; ui.scrollTo = sig;
         toast(sig ? `${ex.nombre}: completo. Sigue ${buscarEj(sig).nombre}` : `${ex.nombre}: completo. Día terminado`);
       } else {
-        toast(`Serie ${hechas(s, ex)} de ${ex.series} guardada`);
+        toast(`Guardado: ${fmt(s.series.at(-1))}`);
       }
       break;
     }
@@ -582,6 +884,19 @@ document.addEventListener('click', e => {
     case 'borrar': {
       const s = sesionHoy();
       if(s && confirm('¿Borrar esta serie?')){ s.series = s.series.filter(x => x.sid !== b.dataset.sid); if(ui.editSid?.sid === b.dataset.sid) ui.editSid = null; guardar(); }
+      break;
+    }
+    case 'terminar': {
+      const s = sesionHoy();
+      if(s && confirm('¿Terminar la sesión de hoy? Puedes reabrirla después.')){ s.cerrada = true; guardar(); toast('Sesión terminada'); }
+      break;
+    }
+    case 'reabrir': { const s = sesionHoy(); if(s){ s.cerrada = false; guardar(); } break; }
+    case 'preguntar': {
+      const ex = buscarEj(id);
+      const txt = prepararPregunta(ex);
+      copiarTexto(txt);
+      window.open('https://claude.ai/new', '_blank', 'noopener');
       break;
     }
     case 'editar': ui.editando = id; ui.tab = 'rutina'; break;
@@ -603,13 +918,32 @@ document.addEventListener('click', e => {
       copiarTexto(resumen(s));
       break;
     }
+    case 'mes': {
+      const d = Number(b.dataset.d); let m = ui.mes.m + d, y = ui.mes.y;
+      if(m < 0){ m = 11; y--; } if(m > 11){ m = 0; y++; }
+      ui.mes = {y, m}; ui.diaCal = null; break;
+    }
+    case 'diaCal': ui.diaCal = ui.diaCal === b.dataset.f ? null : b.dataset.f; break;
+    case 'fotoCamara': $('#foto-camara').click(); return;
+    case 'fotoGaleria': $('#foto-galeria').click(); return;
+    case 'verFoto': {
+      const f = ui.fotos.find(x => x.id === id);
+      if(f){
+        const url = URL.createObjectURL(f.blob);
+        const w = window.open(url, '_blank', 'noopener');
+        if(!w) toast('Permite ventanas emergentes para ver la foto');
+        if(confirm(`Foto del ${f.fecha}. ¿Borrarla?`)){ await fotoBorrar(id); await cargarFotos(); }
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      }
+      return;
+    }
     case 'exportar': exportar(); break;
-    case 'importar': $('#importar-archivo').click(); break;
+    case 'importar': $('#importar-archivo').click(); return;
   }
   render();
 });
 
-// Enter/Espacio también activan ejercicios y casillas (teclado y lectores de pantalla)
+// Enter/Espacio también activan ejercicios y casillas
 document.addEventListener('keydown', e => {
   if((e.key === 'Enter' || e.key === ' ') && e.target.matches('.ex-h, .item')){
     e.preventDefault(); e.target.click();
@@ -622,8 +956,11 @@ document.addEventListener('submit', e => {
   const nombre = String(fd.get('nombre') || '').trim(); if(!nombre) return;
   const equipo = fd.get('equipo'), tipo = fd.get('tipo');
   const unidad = equipo === 'mancuerna' ? 'lb' : equipo === 'disco' ? 'kg' : String(fd.get('unidad') || '').trim();
+  const pobj = String(fd.get('pesoObj') || '').trim();
   const obj = {nombre, bloque: fd.get('bloque'), tipo, equipo, unidad,
     paso: Number(fd.get('paso')) || 1,
+    pesoObj: pobj === '' ? null : Math.max(0, Number(pobj) || 0),
+    porLado: fd.get('porLado') === 'on' && tipo !== 'lista',
     series: tipo === 'lista' ? 1 : Math.max(1, parseInt(fd.get('series')) || 1),
     objetivo: String(fd.get('objetivo') || '').trim() || '10',
     ss: tipo === 'lista' ? '' : String(fd.get('ss') || '').trim(),
@@ -658,21 +995,25 @@ document.addEventListener('change', e => {
     guardar();
   }
   if(t.matches('[data-titulo]')){ db.rutina[ui.dia].titulo = t.value.trim() || db.rutina[ui.dia].titulo; guardar(); render(); }
+  if(t.matches('[data-busqueda]')){ ui.busqueda = t.value; render(); }
 });
 
 function render(){
-  const vistas = {hoy: vistaHoy, rutina: vistaRutina, historial: vistaHist};
+  const y = window.scrollY;
+  const vistas = {hoy: vistaHoy, calendario: vistaCalendario, fotos: vistaFotos, rutina: vistaRutina};
   app.innerHTML = vistas[ui.tab]();
   document.querySelectorAll('nav button').forEach(b => {
     const on = b.dataset.tab === ui.tab;
     b.classList.toggle('on', on);
     if(on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
+  ponerImagenes();
   if(ui.scrollTo){
     const el = document.getElementById('ex-' + ui.scrollTo);
     ui.scrollTo = null;
-    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); return; }
   }
+  window.scrollTo(0, y);
 }
 render();
 
