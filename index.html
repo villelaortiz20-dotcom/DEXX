@@ -113,6 +113,9 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 .check{width:30px;height:30px;border:1.5px solid var(--mut);border-radius:8px;display:grid;place-items:center;flex:0 0 auto;font-size:16px}
 .item.hecho .check{background:var(--txt);border-color:var(--txt);color:#000}
 
+.sub-sec{margin:18px 0 2px}
+.sub-sec h3{margin:0;font:700 18px/1 var(--display);letter-spacing:.04em}
+.sub-sec .meta{margin:4px 0 0}
 .sup{border-left:2px solid var(--acc);padding-left:10px;margin:14px 0 0}
 .sup-t{font:700 15px var(--display);letter-spacing:.06em;color:var(--acc);margin-bottom:-2px}
 .panel{border:1px solid var(--line);border-radius:4px;padding:14px;margin:18px 0 0;background:var(--s1)}
@@ -140,15 +143,7 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 .leyenda{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--mut);margin:10px 0}
 .leyenda i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line)}
 
-/* Fotos */
-.fotos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
-.fotos-grid figure{margin:0;position:relative}
-.fotos-grid img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:6px;display:block;background:var(--s2)}
-.fotos-grid figcaption{font-size:12px;color:var(--mut);margin-top:4px}
-.semana{margin-top:18px}
-.semana h3{margin:0 0 6px;font:700 20px/1 var(--display)}
-
-nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:#000;border-top:1px solid var(--line)}
+nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:#000;border-top:1px solid var(--line)}
 nav button{min-height:56px;border:0;background:transparent;font-weight:500;color:var(--mut);padding:0 2px;font-size:14px}
 nav button.on{color:#000;background:var(--txt);border-radius:10px;font-weight:600}
 
@@ -173,13 +168,10 @@ nav button.on{color:#000;background:var(--txt);border-radius:10px;font-weight:60
 <nav>
   <button data-act="tab" data-tab="hoy">Hoy</button>
   <button data-act="tab" data-tab="calendario">Calendario</button>
-  <button data-act="tab" data-tab="fotos">Fotos</button>
   <button data-act="tab" data-tab="rutina">Rutina</button>
 </nav>
 <div id="toast" role="status" aria-live="polite"></div>
 <input id="importar-archivo" type="file" accept="application/json,.json" class="sr" tabindex="-1" aria-hidden="true">
-<input id="foto-camara" type="file" accept="image/*" capture="environment" class="sr" tabindex="-1" aria-hidden="true">
-<input id="foto-galeria" type="file" accept="image/*" class="sr" tabindex="-1" aria-hidden="true">
 <script>
 const $ = s => document.querySelector(s);
 const app = $('#app');
@@ -187,6 +179,7 @@ const KEY = 'registro-gym-v2';
 const DIAS = [['dom','Domingo'],['lun','Lunes'],['mar','Martes'],['mie','Miércoles'],['jue','Jueves'],['vie','Viernes']];
 const NOMBRE_DIA = Object.fromEntries(DIAS);
 const DIA_DE_HOY = ['dom','lun','mar','mie','jue','vie','dom'];
+const NOTA_GRUPO = {'Técnica':'Descanso de 30 s entre series','Core':'Descanso de 45–60 s entre series'};
 const BLOQUES = [['calentamiento','Calentamiento'],['principal','Principal'],['estiramiento','Estiramiento']];
 const NOMBRE_BLOQUE = Object.fromEntries(BLOQUES);
 const LB_MANC = [3,5,10,15,20,25,30,35,40,45,50];
@@ -233,7 +226,26 @@ const SEED = {
     {id:'s6', nombre:'Rotación torácica en el piso (open book)', bloque:'estiramiento', tipo:'lista', objetivo:'8 por lado'}
   ]},
   mar:{titulo:'Rehab', ejercicios:[]},
-  mie:{titulo:'Técnica + Core en casa', ejercicios:[]},
+  mie:{titulo:'Técnica + Core en casa', ejercicios:[
+    {id:'wc1', nombre:'Círculos de brazo', bloque:'calentamiento', tipo:'lista', objetivo:'10 adelante + 10 atrás', indicacion:'Pequeños, sin pasar el punto de molestia'},
+    {id:'wc2', nombre:'Rotación de hombros', bloque:'calentamiento', tipo:'lista', objetivo:'10 adelante + 10 atrás'},
+    {id:'wc3', nombre:'Gato-camello', bloque:'calentamiento', tipo:'lista', objetivo:'8 reps'},
+    ej({id:'w1', grupo:'Técnica', nombre:'Posición base + deslizamientos defensivos', tipo:'tiempo', series:3, objetivo:'30', paso:5, indicacion:'Sin salto. Cadera baja, pecho arriba. 3–4 pasos laterales, frena y regresa'}),
+    ej({id:'w2', grupo:'Técnica', nombre:'Footwork de aproximación en seco', series:3, objetivo:'8', indicacion:'Sin salto. Velocidad media, 3 pasos'}),
+    ej({id:'w3', grupo:'Técnica', nombre:'Pase de antebrazo contra pared (balón ponchado, ~1.5 m)', series:3, objetivo:'25-30', indicacion:'Toques. Brazos bajo la altura del hombro'}),
+    ej({id:'w4', grupo:'Técnica', nombre:'Recepción: plataforma + desplazamiento lateral y regreso', series:3, objetivo:'10', indicacion:'Una repetición = ir a un lado y volver. Alterna lados'}),
+    ej({id:'w5', grupo:'Técnica', nombre:'Rebote y atrapada a una mano contra pared', equipo:'libre', unidad:'lb', pesoObj:2, series:3, objetivo:'10', porLado:true, indicacion:'Pelotita de 2 lb · a la altura del pecho · por mano'}),
+    ej({id:'w6', grupo:'Técnica', nombre:'Rebote con cambio de dirección', equipo:'libre', unidad:'lb', pesoObj:2, series:3, objetivo:'10', indicacion:'Pelotita de 2 lb · lanzamiento en ángulo, de abajo hacia arriba'}),
+    ej({id:'w7', grupo:'Core', nombre:'Hollow body hold', tipo:'tiempo', series:3, objetivo:'20', paso:5, indicacion:'Zona lumbar pegada al piso. Si no puedes, flexiona rodillas'}),
+    ej({id:'w8', grupo:'Core', nombre:'Dead bug con mancuerna', equipo:'mancuerna', unidad:'lb', pesoObj:10, series:3, objetivo:'10', porLado:true, indicacion:'Bajada de 4 s · mancuerna arriba sin moverla'}),
+    ej({id:'w9', grupo:'Core', nombre:'Reverse crunch', series:3, objetivo:'12-15', indicacion:'Elevación de cadera acostado · sin balanceo'}),
+    ej({id:'w10', grupo:'Core', nombre:'Crunch con mancuerna en el pecho', equipo:'mancuerna', unidad:'lb', pesoObj:10, series:3, objetivo:'12-15', indicacion:'Bajada de 4 s · pausa de 2 s arriba'}),
+    ej({id:'w11', grupo:'Core', nombre:'Plancha lateral con elevación de cadera', series:3, objetivo:'10', porLado:true, indicacion:'Pausa de 1 s arriba'}),
+    ej({id:'w12', grupo:'Core', nombre:'Suitcase carry con mochila', series:3, objetivo:'30 m', porLado:true, pesoObj:15, indicacion:'Mochila de 15–20 kg · torso erguido, sin inclinarte · alternativa: 30–40 s por lado'}),
+    ej({id:'w13', grupo:'Core', nombre:'Bird dog con pausa', series:3, objetivo:'8', porLado:true, indicacion:'Pausa de 3 s · cadera sin rotar'}),
+    {id:'ws1', nombre:'Rotación torácica en el piso', bloque:'estiramiento', tipo:'lista', objetivo:'8 por lado'},
+    {id:'ws2', nombre:'Postura del niño', bloque:'estiramiento', tipo:'lista', objetivo:'2 × 30 s', indicacion:'Solo si no te molesta el hombro'}
+  ]},
   jue:{titulo:'Lower 2', ejercicios:[]},
   vie:{titulo:'Upper 2', ejercicios:[]}
 };
@@ -245,6 +257,7 @@ function normalizar(d){
     if(!d.rutina[k]) d.rutina[k] = {titulo: NOMBRE_DIA[k], ejercicios: []};
     d.rutina[k].titulo = String(d.rutina[k].titulo || NOMBRE_DIA[k]);
     d.rutina[k].ejercicios = Array.isArray(d.rutina[k].ejercicios) ? d.rutina[k].ejercicios : [];
+    if(!d.rutina[k].ejercicios.length && SEED[k].ejercicios.length) d.rutina[k].ejercicios = structuredClone(SEED[k].ejercicios);
     for(const e of d.rutina[k].ejercicios){
       e.pesoObj = typeof e.pesoObj === 'number' ? e.pesoObj : null;
       e.porLado = !!e.porLado;
@@ -269,7 +282,7 @@ const hoyDate = new Date();
 const ui = {
   tab:'hoy', dia: DIA_DE_HOY[hoyDate.getDay()], abierto: undefined, editando:null, editSid:null,
   cur:{}, scrollTo:null, hint:{}, mes:{y:hoyDate.getFullYear(), m:hoyDate.getMonth()}, diaCal:null,
-  busqueda:'', fotos:[]
+  busqueda:''
 };
 
 function guardar(){
@@ -471,9 +484,16 @@ function vistaHoy(){
       if(clave==='principal' && ex.ss && prev && prev.ss === ex.ss) prev.items.push(ex);
       else grupos.push({ss:ex.ss, items:[ex]});
     }
+    let grupoActual = null;
     html += grupos.map(g => {
+      let cab = '';
+      const gr = g.items[0].grupo || null;
+      if(clave === 'principal' && gr && gr !== grupoActual){
+        grupoActual = gr;
+        cab = `<div class="sub-sec"><h3>${esc(gr)}</h3>${NOTA_GRUPO[gr] ? `<p class="meta">${esc(NOTA_GRUPO[gr])}</p>` : ''}</div>`;
+      }
       const inner = g.items.map(e => e.tipo === 'lista' ? tarjetaLista(e, ses) : tarjeta(e, ses, e.id === abierto)).join('');
-      return g.ss && clave==='principal' ? `<div class="sup"><div class="sup-t">Superserie ${esc(g.ss)}</div>${inner}</div>` : inner;
+      return cab + (g.ss && clave==='principal' ? `<div class="sup"><div class="sup-t">Superserie ${esc(g.ss)}</div>${inner}</div>` : inner);
     }).join('');
     html += `</section>`;
   }
@@ -646,38 +666,7 @@ function vistaCalendario(){
   html += `<div class="acciones" style="margin-top:14px">
       <button class="full" data-act="exportar">Exportar respaldo (.json)</button>
       <button class="full" data-act="importar">Importar respaldo (reemplaza los datos)</button>
-    </div><p class="meta" style="margin-top:10px">Las fotos se guardan en el celular y no entran en el respaldo JSON.</p></div>`;
-  return html;
-}
-
-// ---------- vistas: Fotos ----------
-function lunesDe(fecha){
-  const d = parseFecha(fecha); const dow = (d.getDay() + 6) % 7;
-  d.setDate(d.getDate() - dow); return fechaDe(d);
-}
-function etiquetaSemana(lunes){
-  const a = parseFecha(lunes), b = new Date(a); b.setDate(a.getDate() + 6);
-  const fmtC = d => `${d.getDate()} ${MESES[d.getMonth()].slice(0,3)}`;
-  return `Semana del ${fmtC(a)} al ${fmtC(b)}`;
-}
-function vistaFotos(){
-  const grupos = {};
-  for(const f of ui.fotos){ (grupos[lunesDe(f.fecha)] ||= []).push(f); }
-  const semanas = Object.keys(grupos).sort().reverse();
-  let html = `<div class="dia"><h1>Fotos</h1><div class="resumen">${ui.fotos.length} fotos</div></div>
-    <div class="acciones" style="margin-top:6px">
-      <button class="pri full" data-act="fotoCamara">Tomar foto de cierre de semana</button>
-      <button class="full" data-act="fotoGaleria">Subir desde la galería</button>
-    </div>
-    <p class="meta" style="margin-top:8px">Se guarda con la fecha de hoy. Fotos en tu celular, no en la nube.</p>`;
-  if(!semanas.length) html += `<p class="meta" style="margin-top:20px">Aún no tienes fotos.</p>`;
-  for(const l of semanas){
-    html += `<section class="semana"><h3>${etiquetaSemana(l)}</h3><div class="fotos-grid">
-      ${grupos[l].sort((a,b) => a.creada - b.creada).map(f => `<figure>
-        <button class="sec" data-act="verFoto" data-id="${f.id}" style="min-height:0;padding:0;border:0;display:block;width:100%" aria-label="Ver foto del ${f.fecha}"><img alt="Foto del ${f.fecha}" data-foto="${f.id}"></button>
-        <figcaption class="tnum">${f.fecha}</figcaption></figure>`).join('')}
-    </div></section>`;
-  }
+    </div></div>`;
   return html;
 }
 
@@ -769,92 +758,6 @@ $('#importar-archivo').addEventListener('change', async e => {
   } catch { toast('El archivo no es un respaldo válido'); }
 });
 
-// ---------- fotos (IndexedDB: guarda las imágenes como archivos, no en localStorage) ----------
-let fotosDB = null;
-function abrirFotos(){
-  return fotosDB ||= new Promise((res, rej) => {
-    const r = indexedDB.open('gym-fotos', 1);
-    r.onupgradeneeded = () => r.result.createObjectStore('fotos', {keyPath:'id'});
-    r.onsuccess = () => res(r.result);
-    r.onerror = () => rej(r.error);
-  });
-}
-async function fotosOp(modo, fn){
-  const db2 = await abrirFotos();
-  return new Promise((res, rej) => {
-    const tx = db2.transaction('fotos', modo), st = tx.objectStore('fotos');
-    const req = fn(st);
-    tx.oncomplete = () => res(req?.result);
-    tx.onerror = () => rej(tx.error);
-  });
-}
-const fotosTodas = () => fotosOp('readonly', st => st.getAll());
-const fotoGuardar = f => fotosOp('readwrite', st => st.put(f));
-const fotoBorrar = id => fotosOp('readwrite', st => st.delete(id));
-async function cargarFotos(){
-  try { ui.fotos = await fotosTodas(); }
-  catch { ui.fotos = []; toast('No se pudieron cargar las fotos'); }
-  render();
-}
-// Reduce la foto a 1080 px y la guarda como JPEG liviano (unos 200–400 KB).
-// Se decodifica ya reducida para no gastar memoria con fotos de 12 MP.
-async function comprimir(file){
-  const MAX = 1080;
-  let fuente, w, h;
-  try {
-    const probe = await createImageBitmap(file);
-    const k = Math.min(1, MAX / Math.max(probe.width, probe.height));
-    w = Math.round(probe.width * k); h = Math.round(probe.height * k);
-    probe.close?.();
-    fuente = await createImageBitmap(file, {resizeWidth: w, resizeHeight: h, resizeQuality: 'medium'});
-  } catch {
-    const url = URL.createObjectURL(file);
-    try {
-      const img = new Image(); img.src = url; await img.decode();
-      const k = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
-      w = Math.round(img.naturalWidth * k); h = Math.round(img.naturalHeight * k);
-      fuente = img;
-    } finally { URL.revokeObjectURL(url); }
-  }
-  const c = document.createElement('canvas');
-  c.width = w; c.height = h;
-  c.getContext('2d').drawImage(fuente, 0, 0, w, h);
-  fuente.close?.();
-  const blob = await new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error('toBlob')), 'image/jpeg', 0.75));
-  c.width = c.height = 0;
-  return blob;
-}
-async function guardarFoto(file){
-  if(!file) return;
-  toast('Guardando foto…');
-  try {
-    const blob = await comprimir(file);
-    await fotoGuardar({id: uid(), fecha: fechaHoy(), creada: Date.now(), blob});
-    toast('Foto guardada');
-    await cargarFotos();
-  } catch (err) {
-    const sinEspacio = err && (err.name === 'QuotaExceededError' || /quota/i.test(String(err.message)));
-    toast(sinEspacio
-      ? 'Sin espacio en el celular para la foto. Libera almacenamiento y vuelve a intentar.'
-      : 'No se pudo procesar la foto. Prueba con otra o con una captura de pantalla.');
-  }
-}
-$('#foto-camara').addEventListener('change', e => { guardarFoto(e.target.files[0]); e.target.value = ''; });
-$('#foto-galeria').addEventListener('change', e => { guardarFoto(e.target.files[0]); e.target.value = ''; });
-
-// Muestra las imágenes después de render (los blobs no pueden ir en el HTML)
-ui.urls = {};
-function ponerImagenes(){
-  document.querySelectorAll('img[data-foto]').forEach(img => {
-    const id = img.dataset.foto;
-    if(!ui.urls[id]){
-      const f = ui.fotos.find(x => x.id === id);
-      if(f) ui.urls[id] = URL.createObjectURL(f.blob);
-    }
-    if(ui.urls[id]) img.src = ui.urls[id];
-  });
-}
-
 // ---------- eventos ----------
 document.addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if(!b) return;
@@ -862,7 +765,6 @@ document.addEventListener('click', async e => {
   switch(a){
     case 'tab':
       ui.tab = b.dataset.tab; ui.abierto = undefined; ui.editando = null; ui.editSid = null;
-      if(ui.tab === 'fotos'){ cargarFotos(); return; }
       break;
     case 'dia': ui.dia = b.dataset.dia; ui.abierto = undefined; ui.editando = null; ui.editSid = null; break;
     case 'abrir': {
@@ -967,19 +869,6 @@ document.addEventListener('click', async e => {
       ui.mes = {y, m}; ui.diaCal = null; break;
     }
     case 'diaCal': ui.diaCal = ui.diaCal === b.dataset.f ? null : b.dataset.f; break;
-    case 'fotoCamara': $('#foto-camara').click(); return;
-    case 'fotoGaleria': $('#foto-galeria').click(); return;
-    case 'verFoto': {
-      const f = ui.fotos.find(x => x.id === id);
-      if(f){
-        const url = URL.createObjectURL(f.blob);
-        const w = window.open(url, '_blank', 'noopener');
-        if(!w) toast('Permite ventanas emergentes para ver la foto');
-        if(confirm(`Foto del ${f.fecha}. ¿Borrarla?`)){ await fotoBorrar(id); await cargarFotos(); }
-        setTimeout(() => URL.revokeObjectURL(url), 60000);
-      }
-      return;
-    }
     case 'exportar': exportar(); break;
     case 'importar': $('#importar-archivo').click(); return;
   }
@@ -1043,14 +932,13 @@ document.addEventListener('change', e => {
 
 function render(){
   const y = window.scrollY;
-  const vistas = {hoy: vistaHoy, calendario: vistaCalendario, fotos: vistaFotos, rutina: vistaRutina};
+  const vistas = {hoy: vistaHoy, calendario: vistaCalendario, rutina: vistaRutina};
   app.innerHTML = vistas[ui.tab]();
   document.querySelectorAll('nav button').forEach(b => {
     const on = b.dataset.tab === ui.tab;
     b.classList.toggle('on', on);
     if(on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
-  ponerImagenes();
   if(ui.scrollTo){
     const el = document.getElementById('ex-' + ui.scrollTo);
     ui.scrollTo = null;
