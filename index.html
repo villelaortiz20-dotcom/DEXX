@@ -46,13 +46,12 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 
 /* Cabecera */
 .dia{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:14px 0 6px}
-.dia h1{margin:0;font:800 42px/0.95 var(--display)}
+.dia h1{margin:0;font:800 40px/0.95 var(--display);letter-spacing:.01em}
 .dia .resumen{font-size:14px;color:var(--mut);text-align:right;white-space:nowrap}
 .barra{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin:8px 0 4px}
 .barra i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
-.chips{display:flex;gap:6px;overflow-x:auto;padding:6px 0 2px;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.chips button{flex:0 0 auto;min-height:40px;border-radius:999px;padding:0 14px;background:transparent}
+.chips{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;padding:4px 0 2px}
+.chips button{min-height:44px;padding:0;border-radius:10px;font-size:14px;background:transparent;font-weight:500}
 .chips button.on{background:var(--txt);border-color:var(--txt);color:#000;font-weight:600}
 
 /* Secciones */
@@ -89,10 +88,10 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 
 /* Registro de serie */
 .serie-l{font-size:14px;color:var(--mut);margin-top:12px}
-.stepper{display:grid;grid-template-columns:76px 1fr 76px;align-items:center;gap:8px;margin:8px 0 4px}
-.stepper button{min-height:76px;font:400 36px/1 var(--body);border-radius:12px}
+.stepper{display:grid;grid-template-columns:64px 1fr 64px;align-items:center;gap:8px;margin:8px 0 4px}
+.stepper button{min-height:64px;font:400 30px/1 var(--body);border-radius:12px}
 .stepper .c{text-align:center}
-.stepper .v{width:100%;background:none;border:0;min-height:auto;padding:0;text-align:center;font:800 56px/1 var(--display);font-variant-numeric:tabular-nums}
+.stepper .v{width:100%;background:none;border:0;min-height:auto;padding:0;text-align:center;font:800 52px/1 var(--display);font-variant-numeric:tabular-nums}
 .stepper .v:focus{outline:none;color:var(--acc)}
 .stepper .l{font-size:13px;color:var(--mut)}
 .rir{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:10px 0}
@@ -103,7 +102,10 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 .nota-ej{margin-top:10px;min-height:60px}
 
 /* Calentamiento / estiramiento */
-.item{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:4px;background:var(--s1);padding:12px;margin:6px 0;cursor:pointer;min-height:64px}
+.item-wrap{display:flex;gap:6px;margin:8px 0}
+.item-wrap .item{flex:1;min-width:0;margin:0}
+.item{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:4px;background:var(--s1);padding:12px;cursor:pointer;min-height:64px}
+.preg{flex:0 0 76px;min-height:64px;padding:0 8px;font-size:13px;border-radius:4px;color:var(--mut);white-space:normal;line-height:1.2}
 .item.hecho{opacity:.5}
 .item .t{flex:1}
 .item h3{margin:0;font:600 17px/1.2 var(--body)}
@@ -147,7 +149,7 @@ label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
 .semana h3{margin:0 0 6px;font:700 20px/1 var(--display)}
 
 nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:#000;border-top:1px solid var(--line)}
-nav button{min-height:56px;border:0;background:transparent;font-weight:500;color:var(--mut);padding:0 4px;font-size:15px}
+nav button{min-height:56px;border:0;background:transparent;font-weight:500;color:var(--mut);padding:0 2px;font-size:14px}
 nav button.on{color:#000;background:var(--txt);border-radius:10px;font-weight:600}
 
 #toast{position:fixed;left:50%;bottom:112px;transform:translateX(-50%);background:var(--txt);color:#000;padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center;font-weight:500}
@@ -155,6 +157,7 @@ nav button.on{color:#000;background:var(--txt);border-radius:10px;font-weight:60
 
 /* Rutina / respaldo */
 .card{border:1px solid var(--line);border-radius:4px;padding:14px;margin:8px 0;background:var(--s1)}
+.card .row{align-items:flex-start}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .btns{display:flex;gap:6px}
 .btns button{min-height:44px;padding:0 12px}
@@ -376,9 +379,13 @@ const chipsDias = () => `<div class="chips" role="tablist">${DIAS.map(([k,n]) =>
 
 function tarjetaLista(ex, ses){
   const ok = esHecho(ses, ex);
-  return `<div class="item ${ok?'hecho':''}" data-act="check" data-id="${ex.id}" role="checkbox" aria-checked="${ok}" tabindex="0">
-    <div class="t"><h3>${esc(ex.nombre)}</h3><div class="sub">${esc(ex.objetivo)}${ex.indicacion ? ' · ' + esc(ex.indicacion) : ''}</div></div>
-    <span class="check" aria-hidden="true">${ok ? '✓' : ''}</span></div>`;
+  return `<div class="item-wrap">
+    <div class="item ${ok?'hecho':''}" data-act="check" data-id="${ex.id}" role="checkbox" aria-checked="${ok}" tabindex="0">
+      <div class="t"><h3>${esc(ex.nombre)}</h3><div class="sub">${esc(ex.objetivo)}${ex.indicacion ? ' · ' + esc(ex.indicacion) : ''}</div></div>
+      <span class="check" aria-hidden="true">${ok ? '✓' : ''}</span>
+    </div>
+    <button class="sec preg" data-act="preguntar" data-id="${ex.id}" aria-label="Preguntar a Claude sobre ${esc(ex.nombre)}">Preguntar</button>
+  </div>`;
 }
 
 function tarjeta(ex, ses, abierto){
@@ -517,12 +524,12 @@ function formEj(e){
 
 function infoEj(e){
   if(e.tipo === 'lista') return `${NOMBRE_BLOQUE[e.bloque]} · ${esc(e.objetivo)}`;
-  const obj = `${e.series} series × ${esc(e.objetivo)}${e.tipo==='tiempo' ? ' s' : ' reps'}${e.porLado ? ' por lado' : ''}`;
-  const peso = e.tipo === 'tiempo' ? 'tiempo'
-    : e.equipo === 'mancuerna' ? `mancuernas lb${e.pesoObj != null ? ', objetivo ' + e.pesoObj : ''}`
-    : e.equipo === 'disco' ? `discos kg, paso ${e.paso}`
-    : (e.unidad ? `${e.unidad}, paso ${e.paso}` : 'sin peso');
-  return `${obj} · ${peso}${e.ss ? ' · superserie ' + esc(e.ss) : ''}`;
+  const obj = `${e.series} × ${esc(e.objetivo)}${e.tipo==='tiempo' ? ' s' : ' reps'}${e.porLado ? ' por lado' : ''}`;
+  const peso = e.tipo === 'tiempo' ? ''
+    : e.equipo === 'mancuerna' ? ` · mancuernas lb${e.pesoObj != null ? ', objetivo ' + e.pesoObj : ''}`
+    : e.equipo === 'disco' ? ` · discos kg, paso ${e.paso}`
+    : (e.unidad ? ` · peso (${e.unidad}), paso ${e.paso}` : ' · sin peso');
+  return `${obj}${peso}${e.ss ? ' · SS ' + esc(e.ss) : ''}`;
 }
 
 function vistaRutina(){
@@ -720,6 +727,16 @@ function toast(m){ const el = $('#toast'); el.textContent = m; el.classList.add(
 function prepararPregunta(ex){
   const ses = sesionHoy(), ult = ultimaVez(ex.id);
   const sets = seriesDe(ses, ex.id);
+  if(ex.tipo === 'lista'){
+    const bloque = NOMBRE_BLOQUE[ex.bloque] || ex.bloque;
+    return [
+      `Ejercicio de ${bloque.toLowerCase()}: ${ex.nombre}`,
+      `Indicación de la rutina: ${ex.objetivo}${ex.indicacion ? ' · ' + ex.indicacion : ''}`,
+      `Dolor hoy: rodilla ${ses?.dolor.rodilla ?? 0}/10, hombro ${ses?.dolor.hombro ?? 0}/10`,
+      '',
+      'Mi pregunta: '
+    ].join('\n');
+  }
   const L = [
     `Ejercicio: ${ex.nombre}`,
     `Plan: ${ex.series} series${ex.porLado ? ' por lado' : ''} × ${ex.objetivo}${ex.tipo==='tiempo'?' s':' reps'}`,
@@ -779,22 +796,48 @@ async function cargarFotos(){
   catch { ui.fotos = []; toast('No se pudieron cargar las fotos'); }
   render();
 }
+// Reduce la foto a 1080 px y la guarda como JPEG liviano (unos 200–400 KB).
+// Se decodifica ya reducida para no gastar memoria con fotos de 12 MP.
 async function comprimir(file){
-  const img = await createImageBitmap(file);
-  const k = Math.min(1, 1280 / Math.max(img.width, img.height));
+  const MAX = 1080;
+  let fuente, w, h;
+  try {
+    const probe = await createImageBitmap(file);
+    const k = Math.min(1, MAX / Math.max(probe.width, probe.height));
+    w = Math.round(probe.width * k); h = Math.round(probe.height * k);
+    probe.close?.();
+    fuente = await createImageBitmap(file, {resizeWidth: w, resizeHeight: h, resizeQuality: 'medium'});
+  } catch {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = new Image(); img.src = url; await img.decode();
+      const k = Math.min(1, MAX / Math.max(img.naturalWidth, img.naturalHeight));
+      w = Math.round(img.naturalWidth * k); h = Math.round(img.naturalHeight * k);
+      fuente = img;
+    } finally { URL.revokeObjectURL(url); }
+  }
   const c = document.createElement('canvas');
-  c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-  return new Promise(res => c.toBlob(res, 'image/jpeg', 0.8));
+  c.width = w; c.height = h;
+  c.getContext('2d').drawImage(fuente, 0, 0, w, h);
+  fuente.close?.();
+  const blob = await new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error('toBlob')), 'image/jpeg', 0.75));
+  c.width = c.height = 0;
+  return blob;
 }
 async function guardarFoto(file){
   if(!file) return;
+  toast('Guardando foto…');
   try {
     const blob = await comprimir(file);
     await fotoGuardar({id: uid(), fecha: fechaHoy(), creada: Date.now(), blob});
     toast('Foto guardada');
     await cargarFotos();
-  } catch { toast('No se pudo guardar la foto'); }
+  } catch (err) {
+    const sinEspacio = err && (err.name === 'QuotaExceededError' || /quota/i.test(String(err.message)));
+    toast(sinEspacio
+      ? 'Sin espacio en el celular para la foto. Libera almacenamiento y vuelve a intentar.'
+      : 'No se pudo procesar la foto. Prueba con otra o con una captura de pantalla.');
+  }
 }
 $('#foto-camara').addEventListener('change', e => { guardarFoto(e.target.files[0]); e.target.value = ''; });
 $('#foto-galeria').addEventListener('change', e => { guardarFoto(e.target.files[0]); e.target.value = ''; });
