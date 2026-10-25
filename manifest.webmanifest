@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Registro de gym",
-  "short_name": "Gym",
+  "name": "DEXX",
+  "short_name": "DEXX",
   "description": "Registro rápido de series, RIR y dolor para entrenar.",
   "start_url": "./",
   "scope": "./",

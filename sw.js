@@ -1,4 +1,4 @@
-const CACHE = 'registro-gym-v8';
+const CACHE = 'dexx-v9';
 const PRECARGA = ['./', './index.html', './manifest.webmanifest', './icon.svg',
   './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
